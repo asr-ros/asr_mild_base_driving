@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(can)
+project(mild_base_driving)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -10,19 +10,26 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(SDL REQUIRED)
 
-catkin_package(INCLUDE_DIRS include)
-include_directories(include ${catkin_INCLUDE_DIRS})
+find_package(Boost)
+
+catkin_package(
+	INCLUDE_DIRS include
+	CATKIN_DEPENDS roscpp std_msgs tf nav_msgs
+	DEPENDS SDL Boost
+)
 
 include_directories(
-	${catkin_INCLUDE_DIRS}
+	include
 	${SDL_INCLUDE_DIRS}
 )
 
-add_executable(can src/can.cpp src/BaseController.cpp src/CanListener.cpp)
-find_package(Boost)
+add_executable(mild_base_driving 
+	src/mild_base_driving.cpp 
+	src/BaseController.cpp 
+	src/CanListener.cpp
+)
 
-
-target_link_libraries(can
+target_link_libraries(mild_base_driving
 	${catkin_LIBRARIES}
 	${SDL_LIBRARIES}
 )

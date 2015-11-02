@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <linux/sockios.h>
-#include <linux/can.h>
+#include <linux/mild_base_driving.h>
 #include <linux/if.h>
 #include "BaseController.h"
 #include "geometry_msgs/Twist.h"
@@ -22,7 +22,7 @@
 #define EXTRA_BUTTON_BIT 32
 #define SCANNER_OSSD2_BIT 0x10
 
-//this function handles all the can bus/motor/relais board related stuff
+//this function handles all the mild_base_driving bus/motor/relais board related stuff
 //the AX10420 is the controller for the relais board
 void BaseController::run() {
 

@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <package>
-  <name>can</name>
+  <name>mild_base_driving</name>
   <version>0.0.0</version>
-  <description>The can package calculates and publishes the odometry informations, transforms the velocity command into differential drive commands and writes it on the can bus</description>
+  <description>The mild_base_driving package calculates and publishes the odometry informations, transforms the velocity command into differential drive commands and writes it on the mild_base_driving bus</description>
 
  
-  <maintainer email="dehmani@todo.todo">dehmani</maintainer>
+  <maintainer email="pascal.meissner@kit.edu">Pascal Meißner</maintainer>
 
 
   <license>TODO</license>
@@ -17,10 +17,14 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>nav_msgs</build_depend>
   <build_depend>tf</build_depend>
+  <build_depend>SDL</build_depend>
+  <build_depend>Boost</build_depend>
+  
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>nav_msgs</run_depend>
   <run_depend>tf</run_depend>
-
+  <run_depend>SDL</run_depend>
+  <run_depend>Boost</run_depend>
 
 </package>

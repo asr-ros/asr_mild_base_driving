@@ -1,6 +1,6 @@
 #include <sys/socket.h>
 #include <linux/sockios.h>
-#include <linux/can.h>
+#include <linux/mild_base_driving.h>
 #include <linux/if.h>
 #include "CanListener.h"
 #include "ros/ros.h"
@@ -42,7 +42,7 @@ void CanListener::run() {
         nbytes = recv(state->getSocket(), &frame, sizeof(struct can_frame), MSG_DONTWAIT);
         if (nbytes < 0) {
             if (errno != EAGAIN) {
-                ROS_ERROR("can raw socket read, status %i (%i)", nbytes, errno);
+                ROS_ERROR("mild_base_driving raw socket read, status %i (%i)", nbytes, errno);
                 exit(1);
             }
         } else if (nbytes < (int)sizeof(struct can_frame)) {
