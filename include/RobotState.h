@@ -2,8 +2,8 @@
 #define __ROBOT_STATE__
 
 #include <boost/thread/mutex.hpp>
-#include "ros/ros.h"
-#include "nav_msgs/Odometry.h"
+#include <ros/ros.h>
+#include <nav_msgs/Odometry.h>
 #include <tf/transform_broadcaster.h>
 
 class RobotState {
