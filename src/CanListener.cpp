@@ -8,6 +8,7 @@
 #include "OwnMath.h"
 #include <stdlib.h>
 
+
 void CanListener::run() {
 
     //Initialisation
@@ -18,7 +19,7 @@ void CanListener::run() {
     double impulses_per_mm_left = -152.8;
     double impulses_per_mm_right = 152.8;
     double wheel_distance = 663.0;
-    int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
+    int ticks_left, ticks_right, ticks_left_old, ticks_right_old, frame_size;
     ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
     bool first = true;
     ssize_t nbytes;
@@ -42,11 +43,13 @@ void CanListener::run() {
         nbytes = recv(state->getSocket(), &frame, sizeof(struct can_frame), MSG_DONTWAIT);
         if (nbytes < 0) {
             if (errno != EAGAIN) {
-                ROS_ERROR("mild_base_driving raw socket read, status %i (%i)", nbytes, errno);
+                frame_size = nbytes;
+                ROS_ERROR("CAN raw socket read, status %i (%i)", frame_size, errno);
                 exit(1);
             }
         } else if (nbytes < (int)sizeof(struct can_frame)) {
-            ROS_ERROR("read: incomplete CAN frame of size %i",nbytes);
+            frame_size = nbytes;
+            ROS_ERROR("read: incomplete CAN frame of size %i",frame_size);
             exit(1);
         } else {
 
@@ -54,7 +57,7 @@ void CanListener::run() {
             ticks_right = (frame.data[1]<<8)+frame.data[0];
 
             if(first) {
-                ROS_INFO("first");
+                ROS_INFO("Received first encoder data on the CAN bus");
                 ticks_left_old = ticks_left;
                 ticks_right_old = ticks_right;
                 first = false;

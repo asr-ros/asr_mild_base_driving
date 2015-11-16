@@ -22,11 +22,9 @@
 #define EXTRA_BUTTON_BIT 32
 #define SCANNER_OSSD2_BIT 0x10
 
-//this function handles all the mild_base_driving bus/motor/relais board related stuff
-//the AX10420 is the controller for the relais board
+/** This function handles all the can bus/motor/relais board related stuff.
+  * The AX10420 is the controller for the relais board. */
 void BaseController::run() {
-
-
 
     //subscribing to the velocity commands
     ros::Subscriber sub = state->n->subscribe("cmd_vel", 1,
@@ -41,7 +39,7 @@ void BaseController::run() {
     int ret = AX10420_Init(ax10420, eG1, 0, 1, 1, 1); //found via trial and error
     if (ret!=0) {
           ROS_ERROR("AX10420_Init() failed, error code %d", ret);
-        }
+    }
 
 
     //********************************************************************************//
@@ -87,7 +85,7 @@ void BaseController::run() {
        vright2 = vright;
 
 
-        if ((vleft != 0) || (vright != 0)) {
+       if ((vleft != 0) || (vright != 0)) {
     
             // enable motor
             outbyte |= MOTOR_ENABLE_BIT;
@@ -98,9 +96,9 @@ void BaseController::run() {
 
             ret = AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
             if (ret!=0)
-              {
+            {
                 ROS_ERROR("AX10420_SetOutput() failed, error code %d", ret);
-              }
+            }
 
         vleft = std::min(vleft, max_speed);
         vleft = std::max(vleft, -max_speed);
@@ -125,17 +123,19 @@ void BaseController::run() {
         frame.data[3] = outputleft >> 8;
 
         //Writing on the CAN-Bus
-         write(state->getSocket(), &frame, sizeof(struct can_frame));
+        if (!write(state->getSocket(), &frame, sizeof(struct can_frame))) {
+            ROS_ERROR("Failed to write on CAN bus.");
          }
 
+         }
         rate.sleep();
     }
 
-    // disable motor
+    // Disable motor
     AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
 }
 
-//This function is triggered when a Twist message is received
+/// This function is the callback for Twist messages and sets cmd.
 void BaseController::setTargetVelocity(const geometry_msgs::Twist &twist) {
     boost::mutex::scoped_lock scoped_lock(mutex);
     cmd = twist;
