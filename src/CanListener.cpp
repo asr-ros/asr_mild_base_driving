@@ -62,7 +62,7 @@ void CanListener::run() {
                 ticks_right_old = ticks_right;
                 first = false;
             }
-
+	ROS_DEBUG_STREAM("Ticks left: " << ticks_left << " ticks right:  " << ticks_right);
 
         //********************************************************************************//
         // Overflow detection
