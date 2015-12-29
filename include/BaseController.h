@@ -15,7 +15,7 @@ class BaseController {
         void setTargetVelocity(const geometry_msgs::Twist &twist);
         BaseController(RobotState *state):state(state) {
         };
-        void run(); ///Foo blabla
+        void run();
 
 };
 

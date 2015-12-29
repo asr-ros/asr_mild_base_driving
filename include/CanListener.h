@@ -9,8 +9,6 @@ class CanListener {
 
     public:
         CanListener(RobotState *state):state(state) {};
-
-        /// Reads encoder data from CAN and publishes transformed twist-msgs
         void run();
 
 };

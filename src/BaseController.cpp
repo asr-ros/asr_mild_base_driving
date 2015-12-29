@@ -22,9 +22,11 @@
 #define EXTRA_BUTTON_BIT 32
 #define SCANNER_OSSD2_BIT 0x10
 
-/** This function handles all the can bus/motor/relais board related stuff.
-  * The AX10420 is the controller for the relais board. */
+//this function handles all the mild_base_driving bus/motor/relais board related stuff
+//the AX10420 is the controller for the relais board
 void BaseController::run() {
+
+
 
     //subscribing to the velocity commands
     ros::Subscriber sub = state->n->subscribe("cmd_vel", 1,
@@ -33,13 +35,15 @@ void BaseController::run() {
 
     int ax10420;
 
-
-
+    // Wir haben nur eine Karte (Nr.0) und benutzen nur die
+    // erte Gruppe (eG1).
+    // Von dieser wird Port A auf Out und B bzw upper und lower C auf In
+    // geschaltet.
     ax10420 = AX10420_OpenDevice("/dev/ax104200");
-    int ret = AX10420_Init(ax10420, eG1, 0, 1, 1, 1); //found via trial and error
+    int ret = AX10420_Init(ax10420, eG1, 0, 1, 1, 1);
     if (ret!=0) {
           ROS_ERROR("AX10420_Init() failed, error code %d", ret);
-    }
+        }
 
 
     //********************************************************************************//
@@ -51,6 +55,7 @@ void BaseController::run() {
     float max_speed = 612;
     unsigned short outputleft;
     unsigned short outputright;
+    bool motorEnabled = false;
 
     ros::Rate rate(50);
 
@@ -84,21 +89,21 @@ void BaseController::run() {
        vleft2 = vleft;
        vright2 = vright;
 
-
-       if ((vleft != 0) || (vright != 0)) {
-    
+        if ((vleft != 0) || (vright != 0)) {
+	        
             // enable motor
             outbyte |= MOTOR_ENABLE_BIT;
+            motorEnabled = true;
             // disable emergency stop
             outbyte |= EMERGENCY_STOP_BIT;
-            outbyte|=INDICATOR_BIT;
-
-
-            ret = AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
+            outbyte |= INDICATOR_BIT;
+	    
+	    // Now put value to port A of Group 1
+	    ret = AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
             if (ret!=0)
-            {
+              {
                 ROS_ERROR("AX10420_SetOutput() failed, error code %d", ret);
-            }
+              }
 
         vleft = std::min(vleft, max_speed);
         vleft = std::max(vleft, -max_speed);
@@ -123,19 +128,23 @@ void BaseController::run() {
         frame.data[3] = outputleft >> 8;
 
         //Writing on the CAN-Bus
-        if (!write(state->getSocket(), &frame, sizeof(struct can_frame))) {
-            ROS_ERROR("Failed to write on CAN bus.");
-         }
+         write(state->getSocket(), &frame, sizeof(struct can_frame));
+         } 
+         else if (motorEnabled) {
+           ROS_DEBUG("Motor disabled");
+	   // disable motor
+            motorEnabled = false; 
+            AX10420_SetOutput(ax10420, eG1, ePA, 0);
+	 }
 
-         }
         rate.sleep();
     }
 
-    // Disable motor
-    AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
+    // disable motor
+    AX10420_SetOutput(ax10420, eG1, ePA, 0);
 }
 
-/// This function is the callback for Twist messages and sets cmd.
+//This function is triggered when a Twist message is received
 void BaseController::setTargetVelocity(const geometry_msgs::Twist &twist) {
     boost::mutex::scoped_lock scoped_lock(mutex);
     cmd = twist;
