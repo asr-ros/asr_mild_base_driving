@@ -63,7 +63,7 @@ void BaseController::run() {
     frame.can_id = 0xb;
     frame.can_dlc = 8;
 
-    //Loop begin
+    //Driving loop until node is stopped. Processing velocity commands each time being passed.
     while ( ros::ok() ) {
         outbyte = 0;
 
@@ -89,6 +89,7 @@ void BaseController::run() {
        vleft2 = vleft;
        vright2 = vright;
 
+       //We got an effective driving command.
         if ((vleft != 0) || (vright != 0)) {
 	        
             // enable motor
@@ -140,7 +141,7 @@ void BaseController::run() {
         rate.sleep();
     }
 
-    // disable motor
+    //Disable motor and close breaks, because when platform stands with zero velocity commands and open breaks, platform may drift either real or just concerning its sensors values.
     AX10420_SetOutput(ax10420, eG1, ePA, 0);
 }
 
