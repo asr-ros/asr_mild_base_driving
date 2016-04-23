@@ -3,14 +3,21 @@
 
 #include "RobotState.h"
 
-class CanListener {
-    protected:
-        RobotState *state;
+/**
+Gets velocity information from Can and publish them on ROS.
+*/
+class CanListener
+{
+protected:
+    //Current RoboterState.
+    RobotState *state;
 
-    public:
-        CanListener(RobotState *state):state(state) {};
-        void run();
-
+public:
+    CanListener(RobotState *state):state(state) {};
+    /**
+    Get the velocity from Can, transform them and publish on ROS.
+    */
+    void run();
 };
 
 #endif

@@ -8,10 +8,18 @@
 #include <unistd.h>
 #include <string.h>
 
-inline int AX10420_OpenDevice(const char *device_name) {
+/**
+Creates an open file description that refers to a the device.
+Which has read and write access.
+
+@param *device_name path to device file
+*/
+inline int AX10420_OpenDevice(const char *device_name)
+{
     int fd;
     fd = open(device_name, O_RDWR);
-    if (fd < 0) {
+    if (fd < 0)
+    {
         ROS_ERROR("error opening the ax10420 device: %s\n",strerror(errno));
         return -1;
     }
@@ -19,11 +27,20 @@ inline int AX10420_OpenDevice(const char *device_name) {
     return fd;
 };
 
+/**
+Init the ports of the device.
+
+@param fd shows if device open. 1 = device open.
+@param groub control groups.
+@param port ports of device.
+*/
 inline int AX10420_Init(int fd, tAXGroup group,
-                 tAXIOConfigure port_a, tAXIOConfigure port_b,
-                 tAXIOConfigure port_c_upper, tAXIOConfigure port_c_lower) {
+                        tAXIOConfigure port_a, tAXIOConfigure port_b,
+                        tAXIOConfigure port_c_upper, tAXIOConfigure port_c_lower)
+{
     int len;
-    if (fd < 0) {
+    if (fd < 0)
+    {
         ROS_ERROR("AX10420_Init invalid fd:%x\n",fd);
         return -1;
     }
@@ -41,9 +58,12 @@ inline int AX10420_Init(int fd, tAXGroup group,
 
     len = write(fd, &msg, sizeof(AX10420_msg));
 
-    if (len>0) {
+    if (len>0)
+    {
         return 0;
-    } else {
+    }
+    else
+    {
         ROS_ERROR("AX10420_Init write failed: %s\n",strerror(errno));
         return -errno;
     }
@@ -51,9 +71,18 @@ inline int AX10420_Init(int fd, tAXGroup group,
     return -1;
 }
 
-inline int AX10420_GetInput(int fd, tAXGroup group, tAXPort port) {
+/**
+Get Input from spezific group and port.
+
+@param fd shows if device open. 1 = device open.
+@param groub control groups.
+@param port ports of device.
+*/
+inline int AX10420_GetInput(int fd, tAXGroup group, tAXPort port)
+{
     int len;
-    if (fd < 0) {
+    if (fd < 0)
+    {
         ROS_ERROR("AX10420_GetInput invalid fd:%x\n",fd);
         return -1;
     }
@@ -61,45 +90,51 @@ inline int AX10420_GetInput(int fd, tAXGroup group, tAXPort port) {
     AX10420_msg_state state;
     len = read(fd, &state, sizeof(AX10420_msg_state));
 
-    if (len > 0) {
-        switch (group) {
-            case eG1:
-                switch (port) {
-                    case ePA:
-                        return state.port1_a;
-                        break;
-                    case ePB:
-                        return state.port1_b;
-                        break;
-                    case ePC:
-                        return state.port1_c;
-                        break;
-                    default:
-                        return -1;
-                        break;
-                };
+    if (len > 0)
+    {
+        switch (group)
+        {
+        case eG1:
+            switch (port)
+            {
+            case ePA:
+                return state.port1_a;
                 break;
-            case eG2:
-                switch (port) {
-                    case ePA:
-                        return state.port2_a;
-                        break;
-                    case ePB:
-                        return state.port2_b;
-                        break;
-                    case ePC:
-                        return state.port2_c;
-                        break;
-                    default:
-                        return -1;
-                        break;
-                };
+            case ePB:
+                return state.port1_b;
+                break;
+            case ePC:
+                return state.port1_c;
                 break;
             default:
                 return -1;
                 break;
+            };
+            break;
+        case eG2:
+            switch (port)
+            {
+            case ePA:
+                return state.port2_a;
+                break;
+            case ePB:
+                return state.port2_b;
+                break;
+            case ePC:
+                return state.port2_c;
+                break;
+            default:
+                return -1;
+                break;
+            };
+            break;
+        default:
+            return -1;
+            break;
         }
-    } else {
+    }
+    else
+    {
         ROS_ERROR("AX10420_GetInput read failed: %s\n",strerror(errno));
         return -errno;
     }
@@ -107,9 +142,19 @@ inline int AX10420_GetInput(int fd, tAXGroup group, tAXPort port) {
     return -1;
 }
 
-inline int AX10420_SetOutput(int fd, tAXGroup group, tAXPort port, unsigned value) {
+/**
+Set an Output to a port and group, with a spezific value.
+
+@param fd shows if device open. 1 = device open.
+@param groub control groups.
+@param port ports of device.
+@param value that you want send.
+*/
+inline int AX10420_SetOutput(int fd, tAXGroup group, tAXPort port, unsigned value)
+{
     int len;
-    if (fd < 0) {
+    if (fd < 0)
+    {
         ROS_ERROR("AX10420_SetOutput invalid fd:%x\n",fd);
         return -1;
     }
@@ -125,9 +170,12 @@ inline int AX10420_SetOutput(int fd, tAXGroup group, tAXPort port, unsigned valu
 
     len = write(fd, &msg, sizeof(AX10420_msg));
 
-    if (len>0) {
+    if (len>0)
+    {
         return 0;
-    } else {
+    }
+    else
+    {
         ROS_ERROR("AX10420_SetOutput write failed: %s\n",strerror(errno));
         return -errno;
     }
@@ -135,6 +183,5 @@ inline int AX10420_SetOutput(int fd, tAXGroup group, tAXPort port, unsigned valu
     return -1;
 
 }
-
 
 #endif /* _hardware_UseAX10420_h_ */

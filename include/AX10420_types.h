@@ -23,7 +23,8 @@ enum  {eOut,eIn};
  * This message represents a new device initialisation.
  * It is used to set the I/O modes of the device.
  */
-typedef struct {
+typedef struct
+{
     tAXGroup group;
     tAXIOConfigure port_a;
     tAXIOConfigure port_b;
@@ -34,7 +35,8 @@ typedef struct {
 /**
  * This message is used to set the output value of a port.
  */
-typedef struct {
+typedef struct
+{
     tAXGroup group;
     tAXPort port;
     unsigned value;
@@ -43,7 +45,8 @@ typedef struct {
 /**
  * This message is used to represent the state of all groups and ports.
  */
-typedef struct {
+typedef struct
+{
     tAXIOConfigure port1_a;
     tAXIOConfigure port1_b;
     tAXIOConfigure port1_c;
@@ -55,9 +58,11 @@ typedef struct {
 /**
  * This message is used from the userland to send commands to the driver.
  */
-typedef struct {
+typedef struct
+{
     tAXMsgType type;
-    union {
+    union
+    {
         AX10420_msg_init msginit;
         AX10420_msg_setOutput msgsetoutput;
     };

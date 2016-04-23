@@ -8,9 +8,12 @@
 #include "OwnMath.h"
 #include <stdlib.h>
 
-void CanListener::run() {
+void CanListener::run()
+{
 
-    //Initialisation
+    //********************************************************************************//
+    // Initialisation.
+    //********************************************************************************//
     double d = 0, d_left = 0, d_right = 0, t =0 ;
     double velocity_left = 0, velocity_right = 0;
     double angular_velocity = 0, velocity = 0, radius = 0;
@@ -30,7 +33,8 @@ void CanListener::run() {
     current_time = last_time = start_time = ros::Time::now();
 
 
-    while( ros::ok() ) {
+    while( ros::ok() )
+    {
 
         nav_msgs::Odometry odom;
         current_time = ros::Time::now();
@@ -40,20 +44,27 @@ void CanListener::run() {
         // Receiving data from CAN-Bus
         //********************************************************************************//
         nbytes = recv(state->getSocket(), &frame, sizeof(struct can_frame), MSG_DONTWAIT);
-        if (nbytes < 0) {
-            if (errno != EAGAIN) {
+        if (nbytes < 0)
+        {
+            if (errno != EAGAIN)
+            {
                 ROS_ERROR("mild_base_driving raw socket read, status %i (%i)", nbytes, errno);
                 exit(1);
             }
-        } else if (nbytes < (int)sizeof(struct can_frame)) {
+        }
+        else if (nbytes < (int)sizeof(struct can_frame))
+        {
             ROS_ERROR("read: incomplete CAN frame of size %i",nbytes);
             exit(1);
-        } else {
+        }
+        else
+        {
 
             ticks_left = (frame.data[3]<<8)+frame.data[2];
             ticks_right = (frame.data[1]<<8)+frame.data[0];
 
-            if(first) {
+            if(first)
+            {
                 ROS_INFO("first");
                 ticks_left_old = ticks_left;
                 ticks_right_old = ticks_right;
@@ -61,11 +72,12 @@ void CanListener::run() {
             }
 
 
-        //********************************************************************************//
-        // Overflow detection
-        //********************************************************************************//
+            //********************************************************************************//
+            // Overflow detection.
+            //********************************************************************************//
             if (fabs(ticks_left - ticks_left_old) > 0.5*max_encoder)
-            { // overflow detected left
+            {
+                //Overflow detected left.
                 if (ticks_left > ticks_left_old)
                 {
                     ticks_left_old = ticks_left_old + max_encoder;
@@ -73,14 +85,15 @@ void CanListener::run() {
                 else ticks_left_old = ticks_left_old - max_encoder;
             }
             if (fabs(ticks_right - ticks_right_old) > 0.5*max_encoder)
-            { // overflow detected right
+            {
+                //Overflow detected right.
                 if (ticks_right > ticks_right_old)
                 {
                     ticks_right_old = ticks_right_old + max_encoder;
                 }
                 else ticks_right_old = ticks_right_old - max_encoder;
             }
-            // end overflow detection
+            //End overflow detection.
 
             //********************************************************************************//
             // Calculation the estimated velocities from the ticks
@@ -95,57 +108,60 @@ void CanListener::run() {
 
 
             }
-	    ROS_DEBUG_STREAM("D left: " << d_left  << ", D right: " << d_right);
+            ROS_DEBUG_STREAM("D left: " << d_left  << ", D right: " << d_right);
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
             d = ( d_left + d_right ) / 2 ;
-             t = ( d_right - d_left ) / wheel_distance;
+            t = ( d_right - d_left ) / wheel_distance;
 
 
             //********************************************************************************//
-            // Calculating the Odometry
+            // Calculating the Odometry.
             //********************************************************************************//
 
-                    //Moving forward
-                    if(velocity_left == velocity_right) {
-                    velocity = d / d_time;
-                    double tx = state->getX()+velocity*cos(state->getTh())*d_time;
-                    double ty = state->getY()+velocity*sin(state->getTh())*d_time;
+            //Moving forward.
+            if(velocity_left == velocity_right)
+            {
+                velocity = d / d_time;
+                double tx = state->getX()+velocity*cos(state->getTh())*d_time;
+                double ty = state->getY()+velocity*sin(state->getTh())*d_time;
 
-                    state->setVX((tx-state->getX())/d_time);
-                    state->setVY((ty-state->getY())/d_time);
-                    state->setVTh(0);
-                    state->setX(tx);
-                    state->setY(ty);
+                state->setVX((tx-state->getX())/d_time);
+                state->setVY((ty-state->getY())/d_time);
+                state->setVTh(0);
+                state->setX(tx);
+                state->setY(ty);
 
-    
+            }
+            else
+            {
+                angular_velocity = t / d_time;
+                radius = d / t;
 
-                  } else {
-                        angular_velocity = t / d_time;
-                        radius = d / t;
+                //Turning in place.
+                if(velocity_left == -velocity_right)
+                {
+                    state->setVX(0);
+                    state->setVY(0);
+                    double tth = state->getTh() + t ;
+                    state->setVTh((tth-state->getTh())/d_time);
+                    state->setTh(tth);
 
-                        //Turning in place
-                        if(velocity_left == -velocity_right) {
-                          state->setVX(0);
-                          state->setVY(0);
-                          double tth = state->getTh() + t ;
-                          state->setVTh((tth-state->getTh())/d_time);
-                          state->setTh(tth);
-
-
-                        //Other Movements
-                } else {
+                    //Other Movements.
+                }
+                else
+                {
                     double iccx = state->getX() - radius*sin(state->getTh());
                     double iccy = state->getY() + radius*cos(state->getTh());
 
-                    double tx = 
+                    double tx =
                         cos(t)*(state->getX()-iccx)
                         -sin(t)*(state->getY()-iccy) + iccx;
-                    double ty = 
+                    double ty =
                         sin(t)*(state->getX()-iccx)
                         +cos(t)*(state->getY()-iccy) + iccy;
-                    double tth = 
+                    double tth =
                         state->getTh() + t;
 
                     state->setVX((tx-state->getX())/d_time);
@@ -160,14 +176,14 @@ void CanListener::run() {
 
 
         //********************************************************************************//
-        // Publishing
+        // Publishing.
         //********************************************************************************//
 
 
-        //since all odometry is 6DOF we'll need a quaternion created from yaw
+        //Since all odometry is 6DOF we'll need a quaternion created from yaw.
         geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(state->getTh());
 
-        //first, we'll publish the transform over tf
+        //First, we'll publish the transform over tf.
         geometry_msgs::TransformStamped odom_trans;
         odom_trans.header.stamp = current_time;
         odom_trans.header.frame_id = "odom";
@@ -178,27 +194,27 @@ void CanListener::run() {
         odom_trans.transform.translation.z = 0.0;
         odom_trans.transform.rotation = odom_quat;
 
-        //send the transform
+        //Send the transform.
         state->odom_broadcaster.sendTransform(odom_trans);
 
 
-        //next, we'll publish the odometry message over ROS
+        //Next, we'll publish the odometry message over ROS.
         odom.header.stamp = current_time;
         odom.header.frame_id = "odom";
 
-        //set the position
+        //Set the position.
         odom.pose.pose.position.x = state->getX()/1000.0;
         odom.pose.pose.position.y = state->getY()/1000.0;
         odom.pose.pose.position.z = 0.0;
         odom.pose.pose.orientation = odom_quat;
 
-        //set the velocity
+        //Set the velocity.
         odom.child_frame_id = "base_link";
         odom.twist.twist.linear.x = state->getVX()/1000.0;
         odom.twist.twist.linear.y = state->getVY()/1000.0;
         odom.twist.twist.angular.z = state->getVTh();
 
-        //publish the message
+        //Publish the message.
         state->odom_pub.publish(odom);
 
         last_time = current_time;

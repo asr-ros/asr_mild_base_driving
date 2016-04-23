@@ -52,7 +52,7 @@
 template <class T>
 inline T Max(T a, T b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 
@@ -60,70 +60,70 @@ inline T Max(T a, T b)
  */
 inline double Max(double a, double b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(double a, long b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(double a, unsigned long b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(double a, int b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(double a, unsigned b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(long a, double b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(unsigned long a, double b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(int a, double b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline double Max(unsigned a, double b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline int Max(int a, int b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 #if 1
@@ -132,23 +132,23 @@ inline int Max(int a, int b)
  */
 inline unsigned long Max(unsigned long a, int b)
 {
-  // !!!Be Carefull size_t will be casted to unsigned!!!
-  return b < 0 ? a : Max(unsigned(a), unsigned(b));
+    // !!!Be Carefull size_t will be casted to unsigned!!!
+    return b < 0 ? a : Max(unsigned(a), unsigned(b));
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline unsigned long Max(int a, unsigned long b)
 {
-  // !!!Be Carefull size_t will be casted to unsigned!!!
-  return a < 0 ? b : Max(unsigned(a), unsigned(b));
+    // !!!Be Carefull size_t will be casted to unsigned!!!
+    return a < 0 ? b : Max(unsigned(a), unsigned(b));
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline unsigned long Max(unsigned a, unsigned long b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 #endif
 
@@ -156,28 +156,28 @@ inline unsigned long Max(unsigned a, unsigned long b)
  */
 inline unsigned Max(unsigned a, unsigned b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline unsigned Max(int a, unsigned b)
 {
-  return a < 0 ? b : Max(unsigned(a), b);
+    return a < 0 ? b : Max(unsigned(a), b);
 }
 
 /*! Evaluates the maximum of \c a and \c b and returns the result.
  */
 inline unsigned Max(unsigned a, int b)
 {
-  return Max(b, a);
+    return Max(b, a);
 }
 
 /*! Evaluates the maximum of \c a,\c b and \c c and returns the result.
  */
 inline double Max(double a, double b, double c)
 {
-  return Max(a, Max(b, c));
+    return Max(a, Max(b, c));
 }
 
 /*! Evaluates the maximum of \c a,\c b,\c c and \c d and returns the result.
@@ -185,7 +185,7 @@ inline double Max(double a, double b, double c)
 template<typename A, typename B, typename C, typename D, typename R>
 inline R Max(A a, B b, C c, D d)
 {
-  return Max(a, Max(b, Max(c, d)));
+    return Max(a, Max(b, Max(c, d)));
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
@@ -193,112 +193,112 @@ inline R Max(A a, B b, C c, D d)
 template <class T>
 inline T Min(T a, T b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(double a, double b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(double a, long b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(double a, int b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(double a, unsigned long b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(double a, unsigned b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(long a, double b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(int a, double b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(unsigned long a, double b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline double Min(unsigned a, double b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline int Min(int a, int b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline void* Min(void* a, void* b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline unsigned Min(unsigned a, unsigned b)
 {
-  return a < b ? a : b;
+    return a < b ? a : b;
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline int Min(int a, unsigned int b)
 {
-  return b > INT_MAX ? a : (Min(int(b), a));
+    return b > INT_MAX ? a : (Min(int(b), a));
 }
 
 /*! Evaluates the minimum of \c a and \c b and returns the result.
  */
 inline int Min(unsigned int a, int b)
 {
-  return Min(b, a);
+    return Min(b, a);
 }
 
 /*! Evaluates the minimum of \c a, \c b and \c c and returns the result.
  */
 inline double Min(double a, double b, double c)
 {
-  return Min(a, Min(b, c));
+    return Min(a, Min(b, c));
 }
 
 /*! Evaluates the minimum of \c a, \c b, \c c and \c d and returns the result.
@@ -306,7 +306,7 @@ inline double Min(double a, double b, double c)
 template<typename A, typename B, typename C, typename D, typename R>
 inline R Min(A a, B b, C c, D d)
 {
-  return Min(a, Min(b, Min(c, d)));
+    return Min(a, Min(b, Min(c, d)));
 }
 
 /*! Calculate the absolute value
@@ -314,7 +314,7 @@ inline R Min(A a, B b, C c, D d)
 template<typename T>
 inline T Abs(T x)
 {
-  return (x > 0 ? x : -x);
+    return (x > 0 ? x : -x);
 }
 
 #endif

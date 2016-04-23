@@ -5,97 +5,125 @@
 #include "ros/ros.h"
 #include "nav_msgs/Odometry.h"
 #include <tf/transform_broadcaster.h>
+/**
 
-class RobotState {
+All the information which must be used to estimate the pose
+of the robot in odom frame are stored here and initialized to zero.
 
-    protected:
-        double x;
-        double y;
-        double th;
-        double vx;
-        double vy;
-        double vth;
-        boost::mutex mutex;
-        int socket;
 
-    public:
-        ros::Publisher odom_pub;
-        ros::NodeHandle *n;
-        tf::TransformBroadcaster odom_broadcaster;
+*/
+class RobotState
+{
 
-        RobotState(ros::NodeHandle *n, int socket):socket(socket),n(n) {
-            odom_pub = n->advertise<nav_msgs::Odometry>("odom", 50);
-            x = 0.0;
-            y = 0.0;
-            th = 0.0;
-            vx = 0.0;
-            vy = 0.0;
-            vth = 0.0;
-        };
+protected:
+    //Position at x-axis
+    double x;
+    //Position at y-axis
+    double y;
+    //Alignment in radien
+    double th;
+    //Velocity x-axis [m/s]
+    double vx;
+    //Velocity y-axis [m/s]
+    double vy;
+    //Velocity z-axis [rad]
+    double vth;
+    boost::mutex mutex;
+    //Connection with can-bus
+    int socket;
 
-        double getX() {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            return x;
-        };
+public:
+    ros::Publisher odom_pub;
+    ros::NodeHandle *n;
+    tf::TransformBroadcaster odom_broadcaster;
 
-        double getY() {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            return y;
-        };
+    RobotState(ros::NodeHandle *n, int socket):socket(socket),n(n)
+    {
+        odom_pub = n->advertise<nav_msgs::Odometry>("odom", 50);
+        x = 0.0;
+        y = 0.0;
+        th = 0.0;
+        vx = 0.0;
+        vy = 0.0;
+        vth = 0.0;
+    };
 
-        double getTh() {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            return th;
-        };
+    double getX()
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        return x;
+    };
 
-        double getVX() {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            return vx;
-        };
+    double getY()
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        return y;
+    };
 
-        double getVY() {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            return vy;
-        };
+    double getTh()
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        return th;
+    };
 
-        double getVTh() {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            return vth;
-        };
+    double getVX()
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        return vx;
+    };
 
-        int getSocket() {
-            return socket;
-        }
+    double getVY()
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        return vy;
+    };
 
-        void setX(double v) {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            x = v;
-        };
+    double getVTh()
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        return vth;
+    };
 
-        void setY(double v) {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            y = v;
-        };
+    int getSocket()
+    {
+        return socket;
+    }
 
-        void setTh(double v) {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            th = v;
-        };
+    void setX(double v)
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        x = v;
+    };
 
-        void setVX(double v) {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            vx = v;
-        };
+    void setY(double v)
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        y = v;
+    };
 
-        void setVY(double v) {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            vy = v;
-        };
+    void setTh(double v)
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        th = v;
+    };
 
-        void setVTh(double v) {
-            boost::mutex::scoped_lock scoped_lock(mutex);
-            vth = v;
-        };
+    void setVX(double v)
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        vx = v;
+    };
+
+    void setVY(double v)
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        vy = v;
+    };
+
+    void setVTh(double v)
+    {
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        vth = v;
+    };
 };
 
 #endif
