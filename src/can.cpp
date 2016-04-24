@@ -35,7 +35,12 @@ int main(int argc, char** argv)
 
     bind(s, (struct sockaddr *)&addr, sizeof(addr));
     int bufsize = 256;
-    setsockopt(s, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize));
+    if(!setsockopt(s, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize))){
+        ROS_INFO("Can: Socket set successfully.");
+    }else{
+        ROS_ERROR("Can: Socket set error.");
+    }
+
 
     //Creating objects for the other files
     RobotState state(&n, s);
@@ -46,6 +51,8 @@ int main(int argc, char** argv)
     boost::thread contr(boost::bind(&BaseController::run, &controller));
 
     ros::spin();
+
+    ROS_INFO("Can: Init CanListener and BaseController.");
 
     list.join();
     contr.join();

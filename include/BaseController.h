@@ -6,7 +6,7 @@
 #include "geometry_msgs/Twist.h"
 
 /**
-Get drive/velocity commends from ros. Transfrom and send them to Can.
+Get drive/velocity commends from ros. Transfrom and send them to CAN.
 */
 class BaseController
 {

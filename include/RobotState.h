@@ -6,11 +6,8 @@
 #include "nav_msgs/Odometry.h"
 #include <tf/transform_broadcaster.h>
 /**
-
 All the information which must be used to estimate the pose
 of the robot in odom frame are stored here and initialized to zero.
-
-
 */
 class RobotState
 {

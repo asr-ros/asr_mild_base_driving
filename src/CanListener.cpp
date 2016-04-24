@@ -14,12 +14,16 @@ void CanListener::run()
     //********************************************************************************//
     // Initialisation.
     //********************************************************************************//
+    //d=drived distance, d_left = drived distance wheel left, t = changing of the orientation.
     double d = 0, d_left = 0, d_right = 0, t =0 ;
+    // velocity of left/right wheel
     double velocity_left = 0, velocity_right = 0;
+    // angular_velocitiy, velocity = velocity of whole robot, radius = radius of driven circle
     double angular_velocity = 0, velocity = 0, radius = 0;
     int max_encoder = 0xffff;
     double impulses_per_mm_left = -152.8;
     double impulses_per_mm_right = 152.8;
+    //distance between left and right wheel
     double wheel_distance = 663.0;
     int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
     ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
@@ -32,13 +36,14 @@ void CanListener::run()
     ros::Duration delta_time;
     current_time = last_time = start_time = ros::Time::now();
 
-
+    //Loop until node is stopped.
     while( ros::ok() )
     {
 
         nav_msgs::Odometry odom;
         current_time = ros::Time::now();
         delta_time = current_time - last_time;
+        //Time between two loops.
         double d_time = delta_time.toNSec();
         //********************************************************************************//
         // Receiving data from CAN-Bus
@@ -48,13 +53,13 @@ void CanListener::run()
         {
             if (errno != EAGAIN)
             {
-                ROS_ERROR("mild_base_driving raw socket read, status %i (%i)", nbytes, errno);
+                ROS_ERROR("CanListener: mild_base_driving raw socket read, status %i (%i)", nbytes, errno);
                 exit(1);
             }
         }
         else if (nbytes < (int)sizeof(struct can_frame))
         {
-            ROS_ERROR("read: incomplete CAN frame of size %i",nbytes);
+            ROS_ERROR("CanListener: read: incomplete CAN frame of size %i",nbytes);
             exit(1);
         }
         else
@@ -65,7 +70,7 @@ void CanListener::run()
 
             if(first)
             {
-                ROS_INFO("first");
+                ROS_INFO("CanListener: Started successfully.");
                 ticks_left_old = ticks_left;
                 ticks_right_old = ticks_right;
                 first = false;
@@ -78,20 +83,24 @@ void CanListener::run()
             if (fabs(ticks_left - ticks_left_old) > 0.5*max_encoder)
             {
                 //Overflow detected left.
+                ROS_DEBUG("CanListener: Overflow left. Old ticks_left_old = %i", ticks_left_old);
                 if (ticks_left > ticks_left_old)
                 {
                     ticks_left_old = ticks_left_old + max_encoder;
                 }
                 else ticks_left_old = ticks_left_old - max_encoder;
+                ROS_DEBUG("CanListener: Overflow left. New ticks_left_old = %i", ticks_left_old);
             }
             if (fabs(ticks_right - ticks_right_old) > 0.5*max_encoder)
             {
                 //Overflow detected right.
+                ROS_DEBUG("CanListener: Overflow right. Old ticks_right_old = %i", ticks_right_old);
                 if (ticks_right > ticks_right_old)
                 {
                     ticks_right_old = ticks_right_old + max_encoder;
                 }
                 else ticks_right_old = ticks_right_old - max_encoder;
+                ROS_DEBUG("CanListener: Overflow right. Old ticks_right_old = %i", ticks_right_old);
             }
             //End overflow detection.
 
@@ -108,12 +117,15 @@ void CanListener::run()
 
 
             }
-            ROS_DEBUG_STREAM("D left: " << d_left  << ", D right: " << d_right);
+            ROS_DEBUG_STREAM("CanListener: D left: " << d_left  << ", D right: " << d_right);
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
             d = ( d_left + d_right ) / 2 ;
+            ROS_DEBUG("CanListener: Driven dinstance =  %d", d);
+
             t = ( d_right - d_left ) / wheel_distance;
+            ROS_DEBUG("CanListener: Orientation change =  %d", t);
 
 
             //********************************************************************************//
@@ -133,6 +145,8 @@ void CanListener::run()
                 state->setX(tx);
                 state->setY(ty);
 
+                ROS_DEBUG("CanListener: Moving forward. velocity = %d", velocity);
+
             }
             else
             {
@@ -148,6 +162,7 @@ void CanListener::run()
                     state->setVTh((tth-state->getTh())/d_time);
                     state->setTh(tth);
 
+                    ROS_DEBUG("CanListener: Turning in place. angular_velocity = %d , radius = %d", angular_velocity, radius);
                     //Other Movements.
                 }
                 else
@@ -170,6 +185,8 @@ void CanListener::run()
                     state->setX(tx);
                     state->setY(ty);
                     state->setTh(tth);
+
+                    ROS_DEBUG("CanListener: Other movement. angular_velocity = %i , radius = %i", angular_velocity, radius);
                 }
             }
         }

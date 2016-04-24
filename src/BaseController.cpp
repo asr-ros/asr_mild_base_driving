@@ -45,7 +45,7 @@ void BaseController::run()
     int ret = AX10420_Init(ax10420, eG1, 0, 1, 1, 1);
     if (ret!=0)
     {
-        ROS_ERROR("AX10420_Init() failed, error code %d", ret);
+        ROS_ERROR("BaseController: AX10420_Init() failed, error code %d", ret);
     }
 
 
@@ -65,6 +65,8 @@ void BaseController::run()
     struct can_frame frame;
     frame.can_id = 0xb;
     frame.can_dlc = 8;
+
+    bool first = true;
 
     //Driving loop until node is stopped. Processing velocity commands each time being passed.
     while ( ros::ok() )
@@ -86,7 +88,7 @@ void BaseController::run()
             nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315));
         }
 
-        //Smoothing the moves.
+        //Smoothing the moves. With weighting 4/6.
         vleft = vleft2 * 0.40 + nextleft * 0.60;
         vright = vright2 * 0.40 + nextright * 0.60;
 
@@ -108,7 +110,7 @@ void BaseController::run()
             ret = AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
             if (ret!=0)
             {
-                ROS_ERROR("AX10420_SetOutput() failed, error code %d", ret);
+                ROS_ERROR("BaseController: AX10420_SetOutput() failed, error code %d", ret);
             }
 
             vleft = std::min(vleft, max_speed);
@@ -138,10 +140,15 @@ void BaseController::run()
         }
         else if (motorEnabled)
         {
-            ROS_DEBUG("Motor disabled");
+            ROS_DEBUG("BaseController: Motor disabled");
             //Disable motor.
             motorEnabled = false;
             AX10420_SetOutput(ax10420, eG1, ePA, 0);
+        }
+        if(first)
+        {
+            ROS_INFO("BaseController: Started successfully.");
+            first = false;
         }
 
         rate.sleep();
