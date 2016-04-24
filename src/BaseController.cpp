@@ -102,9 +102,11 @@ void BaseController::run()
             //Enable motor.
             outbyte |= MOTOR_ENABLE_BIT;
             motorEnabled = true;
+            ROS_DEBUG("BaseController: Motor enable.");
             //Disable emergency stop.
             outbyte |= EMERGENCY_STOP_BIT;
             outbyte |= INDICATOR_BIT;
+            ROS_DEBUG("BaseController: Disable emergency stop.");
 
             //Now put value to port A of Group 1.
             ret = AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
@@ -123,9 +125,11 @@ void BaseController::run()
 
             //Left.
             outputleft=(unsigned short)(vleft/max_speed*0x7f+0x7f);
+            ROS_DEBUG("BaseController: outputleft = %i", outputleft);
 
             //Right.
             outputright=(unsigned short)(vright/max_speed*0x7f+0x7f);
+            ROS_DEBUG("BaseController: outputright = %i", outputright);
 
             //********************************************************************************//
             //Writing the Velocities in the CAN-Frame
