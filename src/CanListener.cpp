@@ -70,7 +70,7 @@ void CanListener::run()
 
             if(first)
             {
-                ROS_INFO("CanListener: Started successfully.");
+                ROS_INFO("CanListener: Started successfully.\n");
                 ticks_left_old = ticks_left;
                 ticks_right_old = ticks_right;
                 first = false;

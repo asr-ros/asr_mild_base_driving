@@ -151,7 +151,7 @@ void BaseController::run()
         }
         if(first)
         {
-            ROS_INFO("BaseController: Started successfully.");
+            ROS_INFO("BaseController: Started successfully.\n");
             first = false;
         }
 
