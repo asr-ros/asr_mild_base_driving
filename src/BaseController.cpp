@@ -84,6 +84,7 @@ void BaseController::run()
             //********************************************************************************//
             boost::mutex::scoped_lock scoped_lock(mutex);
 
+            // 0.3315 = wheel_distance/2, in meter
             nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315));
             nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315));
         }
