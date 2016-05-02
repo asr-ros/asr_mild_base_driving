@@ -21,8 +21,8 @@ void CanListener::run()
     // angular_velocitiy, velocity = velocity of whole robot, radius = radius of driven circle
     double angular_velocity = 0, velocity = 0, radius = 0;
     int max_encoder = 0xffff;
-    double impulses_per_mm_left = -38.2;
-    double impulses_per_mm_right = 38.2;
+    double impulses_per_mm_left = -152.8;
+    double impulses_per_mm_right = 152.8;
     //distance between left and right wheel
     double wheel_distance = 663.0;
     int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
