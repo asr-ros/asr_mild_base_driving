@@ -85,8 +85,8 @@ void BaseController::run()
             boost::mutex::scoped_lock scoped_lock(mutex);
 
             // 0.3315 = wheel_distance/2, in meter
-            nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315))*2;
-            nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315))*2;
+            nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315))*3;
+            nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315))*3;
         }
 
         //Smoothing the moves. With weighting 4/6.
@@ -121,7 +121,7 @@ void BaseController::run()
             vright = std::min(vright, max_speed);
             vright = std::max(vright, -max_speed);
 
-            ROS_INFO("vleft: %f, vright %f", vleft,vright);
+            ROS_DEBUG("vleft: %f, vright %f", vleft,vright);
             //We need inverse speeds because of the iaim wiring.
             vleft = -vleft;
 
