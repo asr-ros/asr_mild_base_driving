@@ -24,7 +24,7 @@ void CanListener::run()
     double impulses_per_mm_left = -152.8;
     double impulses_per_mm_right = 152.8;
     //distance between left and right wheel
-    double wheel_distance = 663.0;
+    double wheel_distance = 700.0;
     int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
     ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
     bool first = true;
