@@ -121,7 +121,7 @@ void BaseController::run()
             vright = std::min(vright, max_speed);
             vright = std::max(vright, -max_speed);
 
-            ROS_INFO("vleft: %d, vright %d", vleft,vright);
+            ROS_INFO("vleft: %f, vright %f", vleft,vright);
             //We need inverse speeds because of the iaim wiring.
             vleft = -vleft;
 
