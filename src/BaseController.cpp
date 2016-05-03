@@ -56,7 +56,6 @@ void BaseController::run()
     float vleft2 = 0;
     float vright2 = 0;
     float max_speed = 612;
-    float speed_factor = 1;
     unsigned short outputleft;
     unsigned short outputright;
     bool motorEnabled = false;
@@ -86,13 +85,15 @@ void BaseController::run()
             boost::mutex::scoped_lock scoped_lock(mutex);
 
             // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
-            nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315))*speed_factor;
-            nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315))*speed_factor;
+            nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315));
+            nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315));
         }
 
         //Smoothing the moves. With weighting 4/6.
         vleft = vleft2 * 0.40 + nextleft * 0.60;
         vright = vright2 * 0.40 + nextright * 0.60;
+
+        ROS_INFO("vleft: %f, vright: %f", vleft, vright);
 
         vleft2 = vleft;
         vright2 = vright;
