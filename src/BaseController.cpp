@@ -56,7 +56,7 @@ void BaseController::run()
     float vleft2 = 0;
     float vright2 = 0;
     float max_speed = 612;
-    float speed_factor = 2;
+    float speed_factor = 1;
     unsigned short outputleft;
     unsigned short outputright;
     bool motorEnabled = false;
