@@ -93,7 +93,7 @@ void BaseController::run()
         vleft = vleft2 * 0.40 + nextleft * 0.60;
         vright = vright2 * 0.40 + nextright * 0.60;
 
-        ROS_INFO("vleft: %f, vright: %f", vleft, vright);
+        ROS_DEBUG("BaseController: vleft: %f, vright: %f", vleft, vright);
 
         vleft2 = vleft;
         vright2 = vright;
