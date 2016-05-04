@@ -35,7 +35,8 @@ void BaseController::run()
                           this);
 
     int ax10420;
-
+    float speed;
+    state->n->param("velocity", speed, 1.0f);
 
     //We use only one cart (nr.0) and use only the first group (eG1).
     //Port A is set to Out (0).
@@ -85,8 +86,8 @@ void BaseController::run()
             boost::mutex::scoped_lock scoped_lock(mutex);
 
             // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
-            nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315));
-            nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315));
+            nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315))*speed;
+            nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315))*speed;
         }
 
         //Smoothing the moves. With weighting 4/6.
