@@ -121,13 +121,13 @@ void CanListener::run()
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
-            ROS_INFO("CanListener: velocity_left: %d, velocity_right: %d", velocity_left,velocity_right);
+            ROS_INFO("CanListener: velocity_left: %i, velocity_right: %i", velocity_left,velocity_right);
 
             d = ( d_left + d_right ) / 2 ;
-            ROS_DEBUG("CanListener: Driven dinstance =  %d", d);
+            ROS_DEBUG("CanListener: Driven dinstance =  %i", d);
 
             t = ( d_right - d_left ) / wheel_distance;
-            ROS_DEBUG("CanListener: Orientation change =  %d", t);
+            ROS_DEBUG("CanListener: Orientation change =  %i", t);
 
 
             //********************************************************************************//
