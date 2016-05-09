@@ -152,7 +152,7 @@ void BaseController::run()
             ROS_DEBUG("BaseController: Motor disabled");
             //Disable motor.
             motorEnabled = false;
-          //  AX10420_SetOutput(ax10420, eG1, ePA, 0);
+            AX10420_SetOutput(ax10420, eG1, ePA, 0);
         }
         if(first)
         {
