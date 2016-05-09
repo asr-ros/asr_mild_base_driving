@@ -121,7 +121,7 @@ void CanListener::run()
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
-            ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", velocity_left,velocity_right);
+            ROS_DEBUG("CanListener: velocity_left: %f, velocity_right: %f", velocity_left,velocity_right);
 
             d = ( d_left + d_right ) / 2 ;
             ROS_DEBUG("CanListener: Driven dinstance =  %f", d);

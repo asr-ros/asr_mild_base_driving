@@ -156,7 +156,7 @@ void BaseController::run()
         }
         if(first)
         {
-            ROS_INFO("BaseController: Started successfully.\n");
+            ROS_INFO("BaseController: Started successfully. With speedup x%f\n", speed);
             first = false;
         }
 
