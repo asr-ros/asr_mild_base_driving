@@ -98,6 +98,13 @@ void BaseController::run()
 
         ROS_INFO("BaseController: 1. vleft: %f, vright: %f", vleft, vright);
 
+        vleft2 = vleft;
+        vright2 = vright;
+
+
+        //We got an effective driving command.
+        if ((vleft != 0) || (vright != 0))
+        {
 
         ROS_INFO("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
@@ -112,14 +119,6 @@ void BaseController::run()
         vright += right_adapter;
 
         ROS_INFO("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
-
-        vleft2 = vleft;
-        vright2 = vright;
-
-
-        //We got an effective driving command.
-        if ((vleft != 0) || (vright != 0))
-        {
 
             //Enable motor.
             outbyte |= MOTOR_ENABLE_BIT;
