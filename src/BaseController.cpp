@@ -110,10 +110,10 @@ void BaseController::run()
 
 
         if(vright > canListener->get_velocity_right()*100){
-            right_adapter += 0.01;
+            right_adapter += 0.1;
         }else{
 
-            right_adapter -= 0.01;
+            right_adapter -= 0.1;
         }
 
         vright += right_adapter;
