@@ -101,16 +101,16 @@ void BaseController::run()
 
         ROS_INFO("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
-        if(vleft > canListener->get_velocity_left()){
-            vleft += vleft-canListener->get_velocity_left();
+        if(vleft > canListener->get_velocity_left()*100){
+            vleft += vleft-canListener->get_velocity_left()*100;
         }else{
-            vleft -= canListener->get_velocity_left()-vleft;
+            vleft -= canListener->get_velocity_left()*100-vleft;
         }
 
-        if(vright > canListener->get_velocity_right()){
-            vright += vright-canListener->get_velocity_right();
+        if(vright > canListener->get_velocity_right()*100){
+            vright += vright-canListener->get_velocity_right()*100;
         }else{
-            vright -= canListener->get_velocity_right()-vright;
+            vright -= canListener->get_velocity_right()*100-vright;
         }
         ROS_INFO("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
         //We got an effective driving command.
