@@ -26,9 +26,6 @@
 //The AX10420 is the controller for the relais board.
 void BaseController::run()
 {
-
-
-
     //subscribing to the velocity commands
     ros::Subscriber sub = state->n->subscribe("cmd_vel", 1,
                           &BaseController::setTargetVelocity,
