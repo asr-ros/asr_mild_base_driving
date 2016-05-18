@@ -138,7 +138,7 @@ void CanListener::run()
             double right_sum = 0;
             for(int i = 0; i < average_size; i++){
                 left_sum += left_velocity_average[i];
-                right_sum += left_velocity_average[i];
+                right_sum += right_velocity_average[i];
             }
             ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", (left_sum/average_size)*100000000,(right_sum/average_size)*100000000);
 
