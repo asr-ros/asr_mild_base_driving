@@ -130,6 +130,7 @@ void CanListener::run()
            // ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", velocity_left*100000000,velocity_right*100000000);
 
             left_velocity_average[counter]= velocity_left;
+            right_velocity_average[counter]= velocity_right;
             counter++;
             if(counter >= average_size){
                 counter = 0;
