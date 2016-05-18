@@ -69,6 +69,8 @@ void BaseController::run()
 
     bool first = true;
 
+    double right_adapter = 0;
+
     //Driving loop until node is stopped. Processing velocity commands each time being passed.
     while ( ros::ok() )
     {
@@ -96,23 +98,25 @@ void BaseController::run()
 
         ROS_INFO("BaseController: 1. vleft: %f, vright: %f", vleft, vright);
 
-        vleft2 = vleft;
-        vright2 = vright;
 
         ROS_INFO("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
-        if(vleft > canListener->get_velocity_left()*100){
-            vleft += vleft-canListener->get_velocity_left()*100;
+
+        if(vright < canListener->get_velocity_right()*100){
+            right_adapter += 0.01;
         }else{
-            vleft -= canListener->get_velocity_left()*100-vleft;
+
+            right_adapter -= 0.01;
         }
 
-        if(vright > canListener->get_velocity_right()*100){
-            vright += (vright-canListener->get_velocity_right()*100)*6;
-        }else{
-            vright -= (canListener->get_velocity_right()*100-vright)*6;
-        }
+        vright += right_adapter;
+
         ROS_INFO("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
+
+        vleft2 = vleft;
+        vright2 = vright;
+
+
         //We got an effective driving command.
         if ((vleft != 0) || (vright != 0))
         {
