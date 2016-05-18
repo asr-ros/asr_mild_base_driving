@@ -36,6 +36,9 @@ void CanListener::run()
     ros::Duration delta_time;
     current_time = last_time = start_time = ros::Time::now();
 
+    double velocityAverage[10] = {0,0,0,0,0,0,0,0,0,0};
+    int counter = 0;
+
     //Loop until node is stopped.
     while( ros::ok() )
     {
@@ -122,7 +125,20 @@ void CanListener::run()
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
-            ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", velocity_left*1000000,velocity_right*1000000);
+           // ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", velocity_left*100000000,velocity_right*100000000);
+
+            velocityAverage[counter]= velocity_left;
+            counter++;
+            if(counter >= 10){
+                counter = 0;
+            }
+            double average = 0;
+            for(int i = 0; i < 10; i++){
+                average += velocityAverage[i];
+
+            }
+            ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", (average/10)*100000000,velocity_right*10000000);
+
 
             d = ( d_left + d_right ) / 2 ;
             ROS_DEBUG("CanListener: Driven dinstance =  %f", d);
@@ -165,7 +181,7 @@ void CanListener::run()
                     state->setVTh((tth-state->getTh())/d_time);
                     state->setTh(tth);
 
-                    ROS_DEBUG("CanListener: Turning in place. angular_velocity = %d , radius = %d", angular_velocity, radius);
+                    ROS_DEBUG("CanListener: Turning in place. angular_velocity = %f , radius = %f", angular_velocity, radius);
                     //Other Movements.
                 }
                 else
@@ -189,7 +205,7 @@ void CanListener::run()
                     state->setY(ty);
                     state->setTh(tth);
 
-                    ROS_DEBUG("CanListener: Other movement. angular_velocity = %i , radius = %i", angular_velocity, radius);
+                    ROS_DEBUG("CanListener: Other movement. angular_velocity = %f , radius = %f", angular_velocity, radius);
                 }
             }
         }
