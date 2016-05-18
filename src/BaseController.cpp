@@ -107,9 +107,9 @@ void BaseController::run()
         if ((vleft != 0) || (vright != 0))
         {
 
-        ROS_INFO("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
+        ROS_DEBUG("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
-
+        //Adapt the velocity linear to the required velocity, if the real velocity is different to the required.
         if(vright > canListener->get_velocity_right()*100){
             right_adapter += 0.1;
         }else{

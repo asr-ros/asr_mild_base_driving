@@ -134,21 +134,27 @@ void CanListener::run()
 
             ROS_DEBUG("CanListener: velocity_left: %f, velocity_right: %f", velocity_left*100000000,velocity_right*100000000);
 
+            //Calculate average velocity
             left_velocity_average[counter]= velocity_left;
             right_velocity_average[counter]= velocity_right;
+
             counter++;
             if(counter >= average_size){
                 counter = 0;
             }
+
             double left_sum = 0;
             double right_sum = 0;
+
             for(int i = 0; i < average_size; i++){
                 left_sum += left_velocity_average[i];
                 right_sum += right_velocity_average[i];
             }
+
             left_average = left_sum/average_size;
             right_average = right_sum/average_size;
-            ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", left_average*10000000,right_average*10000000);
+
+            ROS_DEBUG("CanListener: velocity_left: %f, velocity_right: %f", left_average*10000000,right_average*10000000);
 
 
             d = ( d_left + d_right ) / 2 ;
