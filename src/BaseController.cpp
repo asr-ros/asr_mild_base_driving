@@ -128,6 +128,8 @@ void BaseController::run()
 
         ROS_INFO("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
 
+        ROS_INFO("BaseController: left_adapter: %f, right_adapter: %f", left_adapter, right_adapter);
+
             //Enable motor.
             outbyte |= MOTOR_ENABLE_BIT;
             motorEnabled = true;
