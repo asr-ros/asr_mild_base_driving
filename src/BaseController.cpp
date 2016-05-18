@@ -102,7 +102,7 @@ void BaseController::run()
         ROS_INFO("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
 
-        if(vright < canListener->get_velocity_right()*100){
+        if(vright > canListener->get_velocity_right()*100){
             right_adapter += 0.01;
         }else{
 
