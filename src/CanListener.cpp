@@ -8,6 +8,10 @@
 #include "OwnMath.h"
 #include <stdlib.h>
 
+
+double left_average = 0;
+double right_average = 0;
+
 void CanListener::run()
 {
 
@@ -39,6 +43,7 @@ void CanListener::run()
     int average_size = 50;
     double left_velocity_average[50] = {};
     double right_velocity_average[50] = {};
+
     int counter = 0;
 
     //Loop until node is stopped.
@@ -127,7 +132,7 @@ void CanListener::run()
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
-           // ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", velocity_left*100000000,velocity_right*100000000);
+            ROS_DEBUG("CanListener: velocity_left: %f, velocity_right: %f", velocity_left*100000000,velocity_right*100000000);
 
             left_velocity_average[counter]= velocity_left;
             right_velocity_average[counter]= velocity_right;
@@ -141,7 +146,9 @@ void CanListener::run()
                 left_sum += left_velocity_average[i];
                 right_sum += right_velocity_average[i];
             }
-            ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", (left_sum/average_size)*100000000,(right_sum/average_size)*100000000);
+            left_average = left_sum/average_size;
+            right_average = right_sum/average_size;
+            ROS_INFO("CanListener: velocity_left: %f, velocity_right: %f", left_average*10000000,right_average*10000000);
 
 
             d = ( d_left + d_right ) / 2 ;
@@ -262,3 +269,12 @@ void CanListener::run()
         rate.sleep();
     }
 }
+
+double CanListener::get_velocity_right(){
+
+    return right_average*10000000;
+    }
+    double CanListener::get_velocity_left(){
+
+    return left_average*10000000;
+    }

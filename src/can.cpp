@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     //Creating objects for the other files
     RobotState state(&n, s);
     CanListener canlist(&state);
-    BaseController controller(&state);
+    BaseController controller(&state, &canlist);
 
     boost::thread list(boost::bind(&CanListener::run, &canlist));
     boost::thread contr(boost::bind(&BaseController::run, &controller));

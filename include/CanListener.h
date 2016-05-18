@@ -18,6 +18,9 @@ public:
     Get the velocity from Can, transform them and publish on ROS.
     */
     void run();
+
+    double get_velocity_right();
+    double get_velocity_left();
 };
 
 #endif
