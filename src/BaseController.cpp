@@ -97,7 +97,7 @@ void BaseController::run()
         vleft = vleft2 * 0.40 + nextleft * 0.60;
         vright = vright2 * 0.40 + nextright * 0.60;
 
-        ROS_INFO("BaseController: 1. vleft: %f, vright: %f", vleft, vright);
+        ROS_DEBUG("BaseController: 1. vleft: %f, vright: %f", vleft, vright);
 
         vleft2 = vleft;
         vright2 = vright;
@@ -129,7 +129,7 @@ void BaseController::run()
 
         vleft += left_adapter;
 
-        ROS_INFO("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
+        ROS_DEBUG("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
 
             //Enable motor.
             outbyte |= MOTOR_ENABLE_BIT;
