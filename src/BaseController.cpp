@@ -107,21 +107,35 @@ void BaseController::run()
         ROS_DEBUG("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
         //Adapt the velocity linear to the required velocity, if the real velocity is different to the required.
-        if(vright > canListener->get_velocity_right()*100){
-            right_adapter += 0.1;
+        double right_adapter_value = vright * 2.f / 100.f;
+        double right_difference = std::abs(vright - canListener->get_velocity_right()*100.f);
+
+        if(right_difference < 1){
+            right_adapter_value = 0.05;
+        }
+        if(vright > canListener->get_velocity_right()*100.f){
+            right_adapter += right_adapter_value;
         }else{
 
-            right_adapter -= 0.1;
+            right_adapter -= right_adapter_value;
         }
 
         vright += right_adapter;
 
 
+
+
+        double left_adapter_value = vleft * 2.f / 100.f;
+        double left_difference = std::abs(vleft - canListener->get_velocity_left()*100.f);
+
+        if(left_difference < 1){
+            left_adapter_value = 0.05;
+        }
         if(vleft > canListener->get_velocity_left()*100){
-            left_adapter += 0.1;
+            left_adapter += left_adapter_value;
         }else{
 
-            left_adapter -= 0.1;
+            left_adapter -= left_adapter_value;
         }
 
         vleft += left_adapter;
