@@ -107,42 +107,11 @@ void BaseController::run()
         ROS_DEBUG("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
         //Adapt the velocity linear to the required velocity, if the real velocity is different to the required.
-        double right_adapter_value = vright * 2.f / 100.f;
-        double right_difference = std::abs(vright - canListener->get_velocity_right()*100.f);
-
-        if(right_difference < 1){
-            right_adapter_value = 0.05;
-        }
-        if(std::abs(vright) > std::abs(canListener->get_velocity_right()*100.f)){
-            right_adapter += right_adapter_value;
-        }else{
-
-            right_adapter -= right_adapter_value;
-        }
-        if(std::abs(right_adapter) > std::abs(vright/2)){
-            right_adapter = vright/2;
-        }
+        right_adapter = calculateAdapter(vright, canListener->get_velocity_right(), right_adapter);
         vright += right_adapter;
 
 
-
-
-        double left_adapter_value = vleft * 2.f / 100.f;
-        double left_difference = std::abs(vleft - canListener->get_velocity_left()*100.f);
-
-        if(left_difference < 1){
-            left_adapter_value = 0.05;
-        }
-        if(std::abs(vleft) > std::abs(canListener->get_velocity_left()*100.f)){
-            left_adapter += left_adapter_value;
-        }else{
-
-            left_adapter -= left_adapter_value;
-        }
-        if(std::abs(left_adapter) > std::abs(vleft/2)){
-            left_adapter = vleft/2;
-        }
-
+        left_adapter = calculateAdapter(vleft, canListener->get_velocity_left(), left_adapter);
         vleft += left_adapter;
 
         ROS_INFO("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
@@ -211,6 +180,26 @@ void BaseController::run()
 
     //Disable motor and close breaks, because when platform stands with zero velocity commands and open breaks, platform may drift either real or just concerning its sensors values.
     AX10420_SetOutput(ax10420, eG1, ePA, 0);
+}
+
+double BaseController::calculateAdapter(double required_velocity, double real_velocity, double adapter){
+
+        double adapter_value = required_velocity * 2.f / 100.f;
+        double difference = std::abs(required_velocity - real_velocity*100.f);
+
+        if(difference < 1){
+            adapter_value = 0.05;
+        }
+        if(std::abs(required_velocity) > std::abs(real_velocity*100.f)){
+            adapter += adapter_value;
+        }else{
+
+            adapter -= adapter_value;
+        }
+        if(std::abs(adapter) > std::abs(required_velocity/2)){
+            adapter = required_velocity/2;
+        }
+        return adapter;
 }
 
 //This function is triggered when a Twist message is received.
