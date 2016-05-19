@@ -139,7 +139,7 @@ void BaseController::run()
 
             left_adapter -= left_adapter_value;
         }
-        if(std::abs(left_adapter) > std:abs(vleft/2)){
+        if(std::abs(left_adapter) > std::abs(vleft/2)){
             left_adapter = vleft/2;
         }
 
