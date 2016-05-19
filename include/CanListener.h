@@ -19,6 +19,9 @@ public:
     */
     void run();
 
+    /**
+    Return the velocity of the wheels, by an average (average_size).
+    */
     double get_velocity_right();
     double get_velocity_left();
 };

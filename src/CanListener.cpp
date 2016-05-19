@@ -25,6 +25,7 @@ void CanListener::run()
     // angular_velocitiy, velocity = velocity of whole robot, radius = radius of driven circle
     double angular_velocity = 0, velocity = 0, radius = 0;
     int max_encoder = 0xffff;
+    //Means 1:144 gearing.
     double impulses_per_mm_left = -152.8;
     double impulses_per_mm_right = 152.8;
     //distance between left and right wheel
@@ -40,6 +41,7 @@ void CanListener::run()
     ros::Duration delta_time;
     current_time = last_time = start_time = ros::Time::now();
 
+    //Average over X succressive measures.
     int average_size = 50;
     double left_velocity_average[50] = {};
     double right_velocity_average[50] = {};
@@ -139,14 +141,16 @@ void CanListener::run()
             right_velocity_average[counter]= velocity_right;
 
             counter++;
-            if(counter >= average_size){
+            if(counter >= average_size)
+            {
                 counter = 0;
             }
 
             double left_sum = 0;
             double right_sum = 0;
 
-            for(int i = 0; i < average_size; i++){
+            for(int i = 0; i < average_size; i++)
+            {
                 left_sum += left_velocity_average[i];
                 right_sum += right_velocity_average[i];
             }
@@ -276,11 +280,11 @@ void CanListener::run()
     }
 }
 
-double CanListener::get_velocity_right(){
-
+double CanListener::get_velocity_right()
+{
     return right_average*10000000;
-    }
-    double CanListener::get_velocity_left(){
-
+}
+double CanListener::get_velocity_left()
+{
     return left_average*10000000;
-    }
+}

@@ -66,6 +66,7 @@ void BaseController::run()
 
     bool first = true;
 
+    //Adaptiation for right/left velocity.
     double right_adapter = 0;
     double left_adapter = 0;
 
@@ -86,8 +87,8 @@ void BaseController::run()
             boost::mutex::scoped_lock scoped_lock(mutex);
 
             // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
-            nextleft =  100 * ( cmd.linear.x -  (cmd.angular.z*0.3315))*speed;
-            nextright =   100 * ( cmd.linear.x +  (cmd.angular.z*0.3315))*speed;
+            nextleft =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
+            nextright =   100 * ( cmd.linear.x + (cmd.angular.z*0.3315))*speed;
         }
 
         //Smoothing the moves. With weighting 4/6.
@@ -104,19 +105,19 @@ void BaseController::run()
         if ((vleft != 0) || (vright != 0))
         {
 
-        ROS_DEBUG("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
+            ROS_DEBUG("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
-        //Adapt the velocity linear to the required velocity, if the real velocity is different to the required.
-        right_adapter = calculateAdapter(vright, canListener->get_velocity_right(), right_adapter);
-        vright += right_adapter;
+            //Adapt the velocity linear to the required velocity, if the real velocity is different to the required.
+            right_adapter = calculateAdapter(vright, canListener->get_velocity_right(), right_adapter);
+            vright += right_adapter;
 
 
-        left_adapter = calculateAdapter(vleft, canListener->get_velocity_left(), left_adapter);
-        vleft += left_adapter;
+            left_adapter = calculateAdapter(vleft, canListener->get_velocity_left(), left_adapter);
+            vleft += left_adapter;
 
-        ROS_DEBUG("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
+            ROS_DEBUG("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
 
-        ROS_DEBUG("BaseController: left_adapter: %f, right_adapter: %f", left_adapter, right_adapter);
+            ROS_DEBUG("BaseController: left_adapter: %f, right_adapter: %f", left_adapter, right_adapter);
 
             //Enable motor.
             outbyte |= MOTOR_ENABLE_BIT;
@@ -182,24 +183,30 @@ void BaseController::run()
     AX10420_SetOutput(ax10420, eG1, ePA, 0);
 }
 
-double BaseController::calculateAdapter(double required_velocity, double real_velocity, double adapter){
+double BaseController::calculateAdapter(double required_velocity, double real_velocity, double adapter)
+{
 
-        double adapter_value = required_velocity * 2.f / 100.f;
-        double difference = std::abs(required_velocity - real_velocity*100.f);
+    double adapter_value = required_velocity * 2.f / 100.f;
+    double difference = std::abs(required_velocity - real_velocity*100.f);
 
-        if(difference < 1){
-            adapter_value = 0.05;
-        }
-        if(std::abs(required_velocity) > std::abs(real_velocity*100.f)){
-            adapter += adapter_value;
-        }else{
+    if(difference < 1)
+    {
+        adapter_value = 0.05;
+    }
+    if(std::abs(required_velocity) > std::abs(real_velocity*100.f))
+    {
+        adapter += adapter_value;
+    }
+    else
+    {
 
-            adapter -= adapter_value;
-        }
-        if(std::abs(adapter) > std::abs(required_velocity/2)){
-            adapter = required_velocity/2;
-        }
-        return adapter;
+        adapter -= adapter_value;
+    }
+    if(std::abs(adapter) > std::abs(required_velocity/2))
+    {
+        adapter = required_velocity/2;
+    }
+    return adapter;
 }
 
 //This function is triggered when a Twist message is received.
