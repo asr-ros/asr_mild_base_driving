@@ -133,13 +133,13 @@ void BaseController::run()
         if(left_difference < 1){
             left_adapter_value = 0.05;
         }
-        if(vleft > canListener->get_velocity_left()*100){
+        if(std::abs(vleft) > std::abs(canListener->get_velocity_left()*100.f){
             left_adapter += left_adapter_value;
         }else{
 
             left_adapter -= left_adapter_value;
         }
-        if(left_adapter > vleft/2){
+        if(std::abs(left_adapter) > std:abs(vleft/2)){
             left_adapter = vleft/2;
         }
 
