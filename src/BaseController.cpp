@@ -113,13 +113,13 @@ void BaseController::run()
         if(right_difference < 1){
             right_adapter_value = 0.05;
         }
-        if(vright > canListener->get_velocity_right()*100.f){
+        if(std::abs(vright) > std::abs(canListener->get_velocity_right()*100.f)){
             right_adapter += right_adapter_value;
         }else{
 
             right_adapter -= right_adapter_value;
         }
-        if(right_adapter > vright/2){
+        if(std::abs(right_adapter) > std::abs(vright/2)){
             right_adapter = vright/2;
         }
         vright += right_adapter;
