@@ -119,7 +119,9 @@ void BaseController::run()
 
             right_adapter -= right_adapter_value;
         }
-
+        if(right_adapter > vright/2){
+            right_adapter = vright/2;
+        }
         vright += right_adapter;
 
 
@@ -136,6 +138,9 @@ void BaseController::run()
         }else{
 
             left_adapter -= left_adapter_value;
+        }
+        if(left_adapter > vleft/2){
+            left_adapter = vleft/2;
         }
 
         vleft += left_adapter;
