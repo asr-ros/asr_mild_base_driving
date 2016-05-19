@@ -34,6 +34,12 @@ public:
     */
     void run();
 
+    /**
+    Calculate the adaptetion, which needed if required velocity and real velocity is different.
+    @param required_velocity calculate velocity from ROS and adjusted for CAN. [cm/s]
+    @param real_velocity velocity from the CAN (CanListener). [cm/s]
+    @param adapter adaptation value which is updated.
+    */
     double calculateAdapter(double required_velocity, double real_velocity, double adapter);
 
 };
