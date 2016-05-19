@@ -34,6 +34,8 @@ public:
     */
     void run();
 
+    double calculateAdapter(double required_velocity, double real_velocity, double adapter);
+
 };
 
 #endif

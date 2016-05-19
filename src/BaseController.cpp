@@ -26,9 +26,6 @@
 //The AX10420 is the controller for the relais board.
 void BaseController::run()
 {
-
-
-
     //subscribing to the velocity commands
     ros::Subscriber sub = state->n->subscribe("cmd_vel", 1,
                           &BaseController::setTargetVelocity,
@@ -110,26 +107,16 @@ void BaseController::run()
         ROS_DEBUG("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
 
         //Adapt the velocity linear to the required velocity, if the real velocity is different to the required.
-        if(vright > canListener->get_velocity_right()*100){
-            right_adapter += 0.1;
-        }else{
-
-            right_adapter -= 0.1;
-        }
-
+        right_adapter = calculateAdapter(vright, canListener->get_velocity_right(), right_adapter);
         vright += right_adapter;
 
 
-        if(vleft > canListener->get_velocity_left()*100){
-            left_adapter += 0.1;
-        }else{
-
-            left_adapter -= 0.1;
-        }
-
+        left_adapter = calculateAdapter(vleft, canListener->get_velocity_left(), left_adapter);
         vleft += left_adapter;
 
         ROS_DEBUG("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
+
+        ROS_DEBUG("BaseController: left_adapter: %f, right_adapter: %f", left_adapter, right_adapter);
 
             //Enable motor.
             outbyte |= MOTOR_ENABLE_BIT;
@@ -193,6 +180,26 @@ void BaseController::run()
 
     //Disable motor and close breaks, because when platform stands with zero velocity commands and open breaks, platform may drift either real or just concerning its sensors values.
     AX10420_SetOutput(ax10420, eG1, ePA, 0);
+}
+
+double BaseController::calculateAdapter(double required_velocity, double real_velocity, double adapter){
+
+        double adapter_value = required_velocity * 2.f / 100.f;
+        double difference = std::abs(required_velocity - real_velocity*100.f);
+
+        if(difference < 1){
+            adapter_value = 0.05;
+        }
+        if(std::abs(required_velocity) > std::abs(real_velocity*100.f)){
+            adapter += adapter_value;
+        }else{
+
+            adapter -= adapter_value;
+        }
+        if(std::abs(adapter) > std::abs(required_velocity/2)){
+            adapter = required_velocity/2;
+        }
+        return adapter;
 }
 
 //This function is triggered when a Twist message is received.
