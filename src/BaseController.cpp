@@ -191,7 +191,11 @@ double BaseController::calculateAdapter(double required_velocity, double real_ve
 
     if(difference < 1)
     {
-        adapter_value = 0.05;
+        if(required_velocity > 0){
+            adapter_value = 0.05;
+        }else{
+            adapter_value = -0.05;
+        }
     }
     if(std::abs(required_velocity) > std::abs(real_velocity*100.f))
     {
@@ -199,7 +203,6 @@ double BaseController::calculateAdapter(double required_velocity, double real_ve
     }
     else
     {
-
         adapter -= adapter_value;
     }
     if(std::abs(adapter) > std::abs(required_velocity/2))
