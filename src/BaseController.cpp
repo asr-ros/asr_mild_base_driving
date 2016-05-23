@@ -100,6 +100,12 @@ void BaseController::run()
         vleft2 = vleft;
         vright2 = vright;
 
+        if(vright == 0){
+            right_adapter = 0;
+        }
+        if(vleft == 0){
+            left_adapter = 0;
+        }
 
         //We got an effective driving command.
         if ((vleft != 0) || (vright != 0))
@@ -186,9 +192,9 @@ void BaseController::run()
 double BaseController::calculateAdapter(double required_velocity, double real_velocity, double adapter)
 {
 
-    double adapter_value = required_velocity * 2.f / 100.f;
+    //double adapter_value = required_velocity * 2.f / 100.f;
     double difference = std::abs(required_velocity - real_velocity*100.f);
-
+    double adapter_value = difference/5;
     if(difference < 1)
     {
         if(required_velocity > 0){
