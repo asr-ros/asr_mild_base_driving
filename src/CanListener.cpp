@@ -42,9 +42,9 @@ void CanListener::run()
     current_time = last_time = start_time = ros::Time::now();
 
     //Average over X succressive measures.
-    int average_size = 50;
-    double left_velocity_average[50] = {};
-    double right_velocity_average[50] = {};
+    int average_size = 25;
+    double left_velocity_average[25] = {};
+    double right_velocity_average[25] = {};
 
     int counter = 0;
 

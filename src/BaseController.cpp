@@ -123,7 +123,7 @@ void BaseController::run()
 
             ROS_DEBUG("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
 
-            ROS_DEBUG("BaseController: left_adapter: %f, right_adapter: %f", left_adapter, right_adapter);
+            ROS_INFO("BaseController: left_adapter: %f, right_adapter: %f", left_adapter, right_adapter);
 
             //Enable motor.
             outbyte |= MOTOR_ENABLE_BIT;
