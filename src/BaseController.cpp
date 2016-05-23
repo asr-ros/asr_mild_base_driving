@@ -192,7 +192,7 @@ void BaseController::run()
 double BaseController::calculateAdapter(double required_velocity, double real_velocity, double adapter)
 {
 
-    double adapter_value = required_velocity / 100.f;
+    double adapter_value = required_velocity / 200.f;
     double difference = std::abs(required_velocity - real_velocity*100.f);
     if(difference < 1)
     {
