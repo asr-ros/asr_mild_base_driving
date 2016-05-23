@@ -200,14 +200,7 @@ double BaseController::calculateAdapter(double required_velocity, double real_ve
         adapter_value = -difference/10.f;
     }
     ROS_INFO("BaseController: difference %f, adapter %f", difference, adapter);
-    if(difference < 1)
-    {
-        if(required_velocity > 0){
-            adapter_value = 0.05;
-        }else{
-            adapter_value = -0.05;
-        }
-    }
+
     if(std::abs(required_velocity) > std::abs(real_velocity*100.f))
     {
         adapter += adapter_value;
