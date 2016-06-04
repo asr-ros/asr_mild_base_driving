@@ -65,13 +65,13 @@ void CanListener::run()
         {
             if (errno != EAGAIN)
             {
-                ROS_ERROR("CanListener: mild_base_driving raw socket read, status %i (%i)", nbytes, errno);
+                ROS_ERROR("CanListener: mild_base_driving raw socket read, status %zu (%i)", nbytes, errno);
                 exit(1);
             }
         }
         else if (nbytes < (int)sizeof(struct can_frame))
         {
-            ROS_ERROR("CanListener: read: incomplete CAN frame of size %i",nbytes);
+            ROS_ERROR("CanListener: read: incomplete CAN frame of size %zu",nbytes);
             exit(1);
         }
         else
@@ -185,7 +185,7 @@ void CanListener::run()
                 state->setX(tx);
                 state->setY(ty);
 
-                ROS_DEBUG("CanListener: Moving forward. velocity = %d", velocity);
+                ROS_DEBUG("CanListener: Moving forward. velocity = %f", velocity);
 
             }
             else
