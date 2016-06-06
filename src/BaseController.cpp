@@ -100,10 +100,12 @@ void BaseController::run()
         vleft2 = vleft;
         vright2 = vright;
 
-        if(vright == 0){
+        if(vright == 0)
+        {
             right_adapter = 0;
         }
-        if(vleft == 0){
+        if(vleft == 0)
+        {
             left_adapter = 0;
         }
 
@@ -192,11 +194,13 @@ void BaseController::run()
 double BaseController::calculateAdapter(double required_velocity, double real_velocity, double adapter)
 {
     double adapter_value = 0;
-    //double adapter_value = required_velocity / 200.f;
     double difference = std::abs(std::abs(required_velocity) - std::abs(real_velocity*100.f));
-    if(required_velocity > 0){
+    if(required_velocity > 0)
+    {
         adapter_value = difference/10.f;
-    }else{
+    }
+    else
+    {
         adapter_value = -difference/10.f;
     }
     ROS_DEBUG("BaseController: difference %f, adapter %f", difference, adapter);
