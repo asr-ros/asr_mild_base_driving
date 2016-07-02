@@ -8,9 +8,12 @@ Gets velocity information from Can and publish them on ROS.
 */
 class CanListener
 {
-protected:
+ private:
     //Current RoboterState.
     RobotState *state;
+
+    geometry_msgs::TransformStamped getOdomTF(ros::Time current_time);
+    nav_msgs::Odometry getOdomMsg(ros::Time current_time);
 
 public:
     CanListener(RobotState *state):state(state) {};

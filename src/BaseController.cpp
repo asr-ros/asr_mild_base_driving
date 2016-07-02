@@ -27,13 +27,13 @@
 void BaseController::run()
 {
     //subscribing to the velocity commands
-    ros::Subscriber sub = state->n->subscribe("cmd_vel", 1,
+    ros::Subscriber sub = state->getNodeHandle()->subscribe("cmd_vel", 1,
                           &BaseController::setTargetVelocity,
                           this);
 
     int ax10420;
     float speed;
-    state->n->param("velocity", speed, 1.0f);
+    state->getNodeHandle()->param("velocity", speed, 1.0f);
 
     //We use only one cart (nr.0) and use only the first group (eG1).
     //Port A is set to Out (0).

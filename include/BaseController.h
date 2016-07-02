@@ -11,7 +11,7 @@ Get drive/velocity commends from ros. Transfrom and send them to CAN.
 */
 class BaseController
 {
-protected:
+ private:
     //Current RoboterState
     RobotState *state;
     CanListener *canListener;
@@ -35,7 +35,7 @@ public:
     void run();
 
     /**
-    Calculate the adaptetion, which needed if required velocity and real velocity is different.
+    Calculate the adaptation, which needed if required velocity and real velocity is different.
     @param required_velocity calculate velocity from ROS and adjusted for CAN. [cm/s]
     @param real_velocity velocity from the CAN (CanListener). [cm/s]
     @param adapter adaptation value which is updated.
