@@ -4,7 +4,7 @@
 #include "RobotState.h"
 
 /**
-Gets velocity information from Can and publish them on ROS.
+Gets velocity information from Can and publish them on ROS as odom information.
 */
 class CanListener
 {

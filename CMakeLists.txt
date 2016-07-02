@@ -24,7 +24,7 @@ include_directories(
 )
 
 add_executable(mild_base_driving 
-	src/can.cpp 
+	src/main.cpp 
 	src/BaseController.cpp 
 	src/CanListener.cpp
 )
