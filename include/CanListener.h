@@ -14,6 +14,8 @@ class CanListener
 
     geometry_msgs::TransformStamped getOdomTF(ros::Time current_time);
     nav_msgs::Odometry getOdomMsg(ros::Time current_time);
+    bool gettingData();
+    int overflowDetection(int ticks, int ticks_old);
 
 public:
     CanListener(RobotState *state):state(state) {};
@@ -27,6 +29,8 @@ public:
     */
     double get_velocity_right();
     double get_velocity_left();
+
+    struct can_frame frame;
 };
 
 #endif

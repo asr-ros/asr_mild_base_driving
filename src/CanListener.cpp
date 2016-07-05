@@ -12,7 +12,8 @@
 double left_average = 0;
 double right_average = 0;
 
-geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time) {
+geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time)
+{
 
     //since all odometry is 6DOF we'll need a quaternion created from yaw
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(state->getTh());
@@ -32,7 +33,8 @@ geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time) {
 
 }
 
-nav_msgs::Odometry CanListener::getOdomMsg(ros::Time current_time) {
+nav_msgs::Odometry CanListener::getOdomMsg(ros::Time current_time)
+{
 
     //since all odometry is 6DOF we'll need a quaternion created from yaw
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(state->getTh());
@@ -57,7 +59,42 @@ nav_msgs::Odometry CanListener::getOdomMsg(ros::Time current_time) {
     return odom;
 
 }
+bool CanListener::gettingData()
+{
+    ssize_t nbytes;
+    nbytes = recv(state->getSocket(), &frame, sizeof(struct can_frame), MSG_DONTWAIT);
+    if (nbytes < 0)
+    {
+        if (errno != EAGAIN)
+        {
+            ROS_ERROR("CanListener: mild_base_driving raw socket read, status %zu (%i)", nbytes, errno);
+            exit(1);
+        }
+    }
+    else if (nbytes < (int)sizeof(struct can_frame))
+    {
+        ROS_ERROR("CanListener: read: incomplete CAN frame of size %zu",nbytes);
+        exit(1);
+    }
+    return true;
+}
 
+int CanListener::overflowDetection(int ticks, int ticks_old)
+{
+    int max_encoder = 0xffff;
+    if (fabs(ticks - ticks_old) > 0.5*max_encoder)
+    {
+        //Overflow detected left.
+        ROS_DEBUG("CanListener: Overflow left. Old ticks_old = %i", ticks_old);
+        if (ticks > ticks_old)
+        {
+            ticks_old = ticks_old + max_encoder;
+        }
+        else ticks_old = ticks_old - max_encoder;
+        ROS_DEBUG("CanListener: Overflow left. New ticks_old = %i", ticks_old);
+    }
+    return ticks_old;
+}
 void CanListener::run()
 {
 
@@ -70,7 +107,6 @@ void CanListener::run()
     double velocity_left = 0, velocity_right = 0;
     // angular_velocitiy, velocity = velocity of whole robot, radius = radius of driven circle
     double angular_velocity = 0, velocity = 0, radius = 0;
-    int max_encoder = 0xffff;
     //Means 1:144 gearing.
     double impulses_per_mm_left = -152.8;
     double impulses_per_mm_right = 152.8;
@@ -79,8 +115,6 @@ void CanListener::run()
     int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
     ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
     bool first = true;
-    ssize_t nbytes;
-    struct can_frame frame;
 
     ros::Rate rate(300);
     ros::Time current_time, last_time, start_time;
@@ -105,21 +139,7 @@ void CanListener::run()
         //********************************************************************************//
         // Receiving data from CAN-Bus
         //********************************************************************************//
-        nbytes = recv(state->getSocket(), &frame, sizeof(struct can_frame), MSG_DONTWAIT);
-        if (nbytes < 0)
-        {
-            if (errno != EAGAIN)
-            {
-                ROS_ERROR("CanListener: mild_base_driving raw socket read, status %zu (%i)", nbytes, errno);
-                exit(1);
-            }
-        }
-        else if (nbytes < (int)sizeof(struct can_frame))
-        {
-            ROS_ERROR("CanListener: read: incomplete CAN frame of size %zu",nbytes);
-            exit(1);
-        }
-        else
+        if(gettingData())
         {
 
             ticks_left = (frame.data[3]<<8)+frame.data[2];
@@ -138,28 +158,8 @@ void CanListener::run()
             //********************************************************************************//
             // Overflow detection.
             //********************************************************************************//
-            if (fabs(ticks_left - ticks_left_old) > 0.5*max_encoder)
-            {
-                //Overflow detected left.
-                ROS_DEBUG("CanListener: Overflow left. Old ticks_left_old = %i", ticks_left_old);
-                if (ticks_left > ticks_left_old)
-                {
-                    ticks_left_old = ticks_left_old + max_encoder;
-                }
-                else ticks_left_old = ticks_left_old - max_encoder;
-                ROS_DEBUG("CanListener: Overflow left. New ticks_left_old = %i", ticks_left_old);
-            }
-            if (fabs(ticks_right - ticks_right_old) > 0.5*max_encoder)
-            {
-                //Overflow detected right.
-                ROS_DEBUG("CanListener: Overflow right. Old ticks_right_old = %i", ticks_right_old);
-                if (ticks_right > ticks_right_old)
-                {
-                    ticks_right_old = ticks_right_old + max_encoder;
-                }
-                else ticks_right_old = ticks_right_old - max_encoder;
-                ROS_DEBUG("CanListener: Overflow right. Old ticks_right_old = %i", ticks_right_old);
-            }
+            ticks_left_old = overflowDetection(ticks_left, ticks_left_old);
+            ticks_right_old = overflowDetection(ticks_right, ticks_right_old);
             //End overflow detection.
 
             //********************************************************************************//

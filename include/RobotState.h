@@ -12,7 +12,7 @@
 class RobotState
 {
 
- private:
+ protected:
   tf::TransformBroadcaster odom_broadcaster;
 
   //Position at x-axis
