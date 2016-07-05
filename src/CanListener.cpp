@@ -21,8 +21,6 @@ void CanListener::initialize(){
     ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
     first = true;
 
-    current_time = last_time = start_time = ros::Time::now();
-
     //Average over X succressive measures.
     average_size = 50;
     left_velocity_average[50];
@@ -173,6 +171,7 @@ void CanListener::run()
     //********************************************************************************//
     initialize();
     ros::Rate rate(300);
+    current_time = last_time = start_time = ros::Time::now();
     //Loop until node is stopped.
     while( ros::ok() )
     {
