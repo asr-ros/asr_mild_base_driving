@@ -25,8 +25,8 @@ void CanListener::initialize(){
 
     //Average over X succressive measures.
     average_size = 50;
-    left_velocity_average[average_size];
-    right_velocity_average[average_size];
+    left_velocity_average[50];
+    right_velocity_average[50];
 
     counter = 0;
 
@@ -168,7 +168,6 @@ void CanListener::otherMovement(double d, double t, double d_time)
 }
 void CanListener::run()
 {
-
     //********************************************************************************//
     // Initialisation.
     //********************************************************************************//
@@ -185,7 +184,6 @@ void CanListener::run()
         //********************************************************************************//
         if(gettingData())
         {
-
             ticks_left = (frame.data[3]<<8)+frame.data[2];
             ticks_right = (frame.data[1]<<8)+frame.data[0];
 
@@ -203,7 +201,6 @@ void CanListener::run()
             //********************************************************************************//
             ticks_left_old = overflowDetection(ticks_left, ticks_left_old);
             ticks_right_old = overflowDetection(ticks_right, ticks_right_old);
-            //End overflow detection.
 
             //********************************************************************************//
             // Calculation the estimated velocities from the ticks
@@ -215,10 +212,7 @@ void CanListener::run()
 
                 velocity_left = d_left / d_time;
                 velocity_right = d_right / d_time;
-
-
             }
-            ROS_DEBUG_STREAM("CanListener: D left: " << d_left  << ", D right: " << d_right);
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
@@ -258,14 +252,12 @@ void CanListener::run()
             // Calculating the Odometry.
             //********************************************************************************//
 
-            //Moving forward.
             if(velocity_left == velocity_right)
             {
                 movingForward(d, d_time);
             }
             else
             {
-                //Turning in place.
                 if(velocity_left == -velocity_right)
                 {
                     turningInPlace(t, d_time);
