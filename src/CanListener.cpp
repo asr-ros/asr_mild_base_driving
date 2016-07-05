@@ -13,7 +13,7 @@ double left_average = 0;
 double right_average = 0;
 
 geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time) {
-  
+
     //since all odometry is 6DOF we'll need a quaternion created from yaw
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(state->getTh());
 
@@ -285,7 +285,7 @@ void CanListener::run()
         state->sendTransformOdomTF(getOdomTF(current_time));
 
         //Next, we'll publish the odometry message over ROS.
-        state->publishOdomMsg(getOdomMsg(current_time));
+        state->odom_pub.publish(getOdomMsg(current_time));
 
         last_time = current_time;
 

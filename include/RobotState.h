@@ -11,11 +11,8 @@
 */
 class RobotState
 {
-  
- private:
 
-  ros::Publisher odom_pub;
-  ros::NodeHandle* n;
+ private:
   tf::TransformBroadcaster odom_broadcaster;
 
   //Position at x-axis
@@ -35,7 +32,8 @@ class RobotState
   int socket;
 
  public:
-
+ ros::Publisher odom_pub;
+ ros::NodeHandle* n;
  RobotState(ros::NodeHandle* n, int socket) : socket(socket), n(n)
     {
       odom_pub = n->advertise<nav_msgs::Odometry>("odom", 50);
