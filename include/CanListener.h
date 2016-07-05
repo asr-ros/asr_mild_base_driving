@@ -9,9 +9,37 @@ Gets velocity information from Can and publish them on ROS as odom information.
 class CanListener
 {
  private:
+
+    //Variables
     //Current RoboterState.
     RobotState *state;
+    //d=drived distance, d_left = drived distance wheel left, t = changing of the orientation.
+    double d, d_left, d_right, t;
+    // velocity of left/right wheel
+    double velocity_left, velocity_right;
+    //Means 1:144 gearing.
+    double impulses_per_mm_left;
+    double impulses_per_mm_right;
+    //distance between left and right wheel
+    double wheel_distance;
+    int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
 
+    bool first;
+
+    ros::Time current_time, last_time, start_time;
+
+    //Average over X succressive measures.
+    int average_size;
+    double left_velocity_average[];
+    double right_velocity_average[];
+
+    int counter;
+
+    double left_average;
+    double right_average;
+
+    //Methodes
+    void initialize();
     geometry_msgs::TransformStamped getOdomTF(ros::Time current_time);
     nav_msgs::Odometry getOdomMsg(ros::Time current_time);
     bool gettingData();

@@ -9,8 +9,30 @@
 #include <stdlib.h>
 
 
-double left_average = 0;
-double right_average = 0;
+void CanListener::initialize(){
+//d=drived distance, d_left = drived distance wheel left, t = changing of the orientation.
+    d = 0; d_left = 0; d_right = 0; t =0 ;
+    // velocity of left/right wheel
+    velocity_left = 0; velocity_right = 0;
+    //Means 1:144 gearing.
+    impulses_per_mm_left = -152.8;
+    impulses_per_mm_right = 152.8;
+    //distance between left and right wheel
+    ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
+    first = true;
+
+    current_time = last_time = start_time = ros::Time::now();
+
+    //Average over X succressive measures.
+    average_size = 50;
+    left_velocity_average[average_size];
+    right_velocity_average[average_size];
+
+    counter = 0;
+
+    left_average = 0;
+    right_average = 0;
+}
 
 geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time)
 {
@@ -150,39 +172,14 @@ void CanListener::run()
     //********************************************************************************//
     // Initialisation.
     //********************************************************************************//
-    //d=drived distance, d_left = drived distance wheel left, t = changing of the orientation.
-    double d = 0, d_left = 0, d_right = 0, t =0 ;
-    // velocity of left/right wheel
-    double velocity_left = 0, velocity_right = 0;
-    //Means 1:144 gearing.
-    double impulses_per_mm_left = -152.8;
-    double impulses_per_mm_right = 152.8;
-    //distance between left and right wheel
-    double wheel_distance = 663.0;
-    int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
-    ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
-    bool first = true;
-
+    initialize();
     ros::Rate rate(300);
-    ros::Time current_time, last_time, start_time;
-    ros::Duration delta_time;
-    current_time = last_time = start_time = ros::Time::now();
-
-    //Average over X succressive measures.
-    int average_size = 50;
-    double left_velocity_average[50] = {};
-    double right_velocity_average[50] = {};
-
-    int counter = 0;
-
     //Loop until node is stopped.
     while( ros::ok() )
     {
-
         current_time = ros::Time::now();
-        delta_time = current_time - last_time;
         //Time between two loops.
-        double d_time = delta_time.toNSec();
+        double d_time = (current_time - last_time).toNSec();
         //********************************************************************************//
         // Receiving data from CAN-Bus
         //********************************************************************************//
@@ -201,7 +198,6 @@ void CanListener::run()
                 first = false;
             }
 
-
             //********************************************************************************//
             // Overflow detection.
             //********************************************************************************//
@@ -212,7 +208,7 @@ void CanListener::run()
             //********************************************************************************//
             // Calculation the estimated velocities from the ticks
             //********************************************************************************//
-            if (delta_time > ros::Duration(0,0))
+            if ((current_time - last_time) > ros::Duration(0,0))
             {
                 d_left  =  (ticks_left  - ticks_left_old) / impulses_per_mm_left ;
                 d_right =  (ticks_right - ticks_right_old) / impulses_per_mm_right ;
