@@ -16,6 +16,9 @@ class CanListener
     nav_msgs::Odometry getOdomMsg(ros::Time current_time);
     bool gettingData();
     int overflowDetection(int ticks, int ticks_old);
+    void movingForward(double d, double d_time);
+    void turningInPlace(double t, double d_time);
+    void otherMovement(double d, double t, double d_time);
 
 public:
     CanListener(RobotState *state):state(state) {};

@@ -95,6 +95,55 @@ int CanListener::overflowDetection(int ticks, int ticks_old)
     }
     return ticks_old;
 }
+
+void CanListener::movingForward(double d, double d_time)
+{
+    double velocity = d / d_time;
+    double tx = state->getX()+velocity*cos(state->getTh())*d_time;
+    double ty = state->getY()+velocity*sin(state->getTh())*d_time;
+
+    state->setVX((tx-state->getX())/d_time);
+    state->setVY((ty-state->getY())/d_time);
+    state->setVTh(0);
+    state->setX(tx);
+    state->setY(ty);
+
+    ROS_DEBUG("CanListener: Moving forward. velocity = %f", velocity);
+}
+
+void CanListener::turningInPlace(double t, double d_time)
+{
+    state->setVX(0);
+    state->setVY(0);
+    double tth = state->getTh() + t ;
+    state->setVTh((tth-state->getTh())/d_time);
+    state->setTh(tth);
+}
+
+void CanListener::otherMovement(double d, double t, double d_time)
+{
+    double radius = d / t;
+    double iccx = state->getX() - radius*sin(state->getTh());
+    double iccy = state->getY() + radius*cos(state->getTh());
+
+    double tx =
+        cos(t)*(state->getX()-iccx)
+        -sin(t)*(state->getY()-iccy) + iccx;
+    double ty =
+        sin(t)*(state->getX()-iccx)
+        +cos(t)*(state->getY()-iccy) + iccy;
+    double tth =
+        state->getTh() + t;
+
+    state->setVX((tx-state->getX())/d_time);
+    state->setVY((ty-state->getY())/d_time);
+    state->setVTh((tth-state->getTh())/d_time);
+    state->setX(tx);
+    state->setY(ty);
+    state->setTh(tth);
+
+    ROS_DEBUG("CanListener: Other movement. radius = %f", radius);
+}
 void CanListener::run()
 {
 
@@ -105,8 +154,6 @@ void CanListener::run()
     double d = 0, d_left = 0, d_right = 0, t =0 ;
     // velocity of left/right wheel
     double velocity_left = 0, velocity_right = 0;
-    // angular_velocitiy, velocity = velocity of whole robot, radius = radius of driven circle
-    double angular_velocity = 0, velocity = 0, radius = 0;
     //Means 1:144 gearing.
     double impulses_per_mm_left = -152.8;
     double impulses_per_mm_right = 152.8;
@@ -218,58 +265,18 @@ void CanListener::run()
             //Moving forward.
             if(velocity_left == velocity_right)
             {
-                velocity = d / d_time;
-                double tx = state->getX()+velocity*cos(state->getTh())*d_time;
-                double ty = state->getY()+velocity*sin(state->getTh())*d_time;
-
-                state->setVX((tx-state->getX())/d_time);
-                state->setVY((ty-state->getY())/d_time);
-                state->setVTh(0);
-                state->setX(tx);
-                state->setY(ty);
-
-                ROS_DEBUG("CanListener: Moving forward. velocity = %f", velocity);
-
+                movingForward(d, d_time);
             }
             else
             {
-                angular_velocity = t / d_time;
-                radius = d / t;
-
                 //Turning in place.
                 if(velocity_left == -velocity_right)
                 {
-                    state->setVX(0);
-                    state->setVY(0);
-                    double tth = state->getTh() + t ;
-                    state->setVTh((tth-state->getTh())/d_time);
-                    state->setTh(tth);
-
-                    ROS_DEBUG("CanListener: Turning in place. angular_velocity = %f , radius = %f", angular_velocity, radius);
-                    //Other Movements.
+                    turningInPlace(t, d_time);
                 }
                 else
                 {
-                    double iccx = state->getX() - radius*sin(state->getTh());
-                    double iccy = state->getY() + radius*cos(state->getTh());
-
-                    double tx =
-                        cos(t)*(state->getX()-iccx)
-                        -sin(t)*(state->getY()-iccy) + iccx;
-                    double ty =
-                        sin(t)*(state->getX()-iccx)
-                        +cos(t)*(state->getY()-iccy) + iccy;
-                    double tth =
-                        state->getTh() + t;
-
-                    state->setVX((tx-state->getX())/d_time);
-                    state->setVY((ty-state->getY())/d_time);
-                    state->setVTh((tth-state->getTh())/d_time);
-                    state->setX(tx);
-                    state->setY(ty);
-                    state->setTh(tth);
-
-                    ROS_DEBUG("CanListener: Other movement. angular_velocity = %f , radius = %f", angular_velocity, radius);
+                    otherMovement(d,t,d_time);
                 }
             }
         }
