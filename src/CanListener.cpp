@@ -11,7 +11,8 @@
 
 
 
-void CanListener::initalize(){
+void CanListener::initalize()
+{
     //Means 1:144 gearing.
     impulses_per_mm_left = -152.8;
     impulses_per_mm_right = 152.8;
@@ -159,14 +160,34 @@ void CanListener::otherMovement(double d, double t, double d_time)
 
     ROS_DEBUG("CanListener: Other movement. radius = %f", radius);
 }
+
+double CanListener::calculateAverage(double velocity_average[], double velocity)
+{
+    //Calculate average velocity
+    velocity_average[counter]= velocity;
+
+    counter++;
+    if(counter >= average_size)
+    {
+        counter = 0;
+    }
+
+    double sum = 0;
+
+    for(int i = 0; i < average_size; i++)
+    {
+        sum += velocity_average[i];
+    }
+
+    return sum/average_size;
+}
 void CanListener::run()
 {
-
     //********************************************************************************//
     // Initialisation.
     //********************************************************************************//
-    //d=drived distance, d_left = drived distance wheel left, t = changing of the orientation.
     initalize();
+    //d=drived distance, d_left = drived distance wheel left, t = changing of the orientation.
     double d = 0, d_left = 0, d_right = 0, t =0 ;
     // velocity of left/right wheel
     double velocity_left = 0, velocity_right = 0;
@@ -188,11 +209,10 @@ void CanListener::run()
         //********************************************************************************//
         if(gettingData())
         {
-
             ticks_left = (frame.data[3]<<8)+frame.data[2];
             ticks_right = (frame.data[1]<<8)+frame.data[0];
 
-            ROS_DEBUG("ticks_lef: %i, ticks_right: %i", ticks_left,ticks_right);
+            ROS_DEBUG("ticks_left: %i, ticks_right: %i", ticks_left,ticks_right);
             if(first)
             {
                 ROS_INFO("CanListener: Started successfully.\n");
@@ -206,7 +226,6 @@ void CanListener::run()
             //********************************************************************************//
             ticks_left_old = overflowDetection(ticks_left, ticks_left_old);
             ticks_right_old = overflowDetection(ticks_right, ticks_right_old);
-            //End overflow detection.
 
             //********************************************************************************//
             // Calculation the estimated velocities from the ticks
@@ -218,38 +237,13 @@ void CanListener::run()
 
                 velocity_left = d_left / d_time;
                 velocity_right = d_right / d_time;
-
-
             }
-            ROS_DEBUG_STREAM("CanListener: D left: " << d_left  << ", D right: " << d_right);
+
             ticks_left_old = ticks_left;
             ticks_right_old = ticks_right;
 
-            ROS_DEBUG("CanListener: velocity_left: %f, velocity_right: %f", velocity_left*100000000,velocity_right*100000000);
-
-            //Calculate average velocity
-            left_velocity_average[counter]= velocity_left;
-            right_velocity_average[counter]= velocity_right;
-
-            counter++;
-            if(counter >= average_size)
-            {
-                counter = 0;
-            }
-
-            double left_sum = 0;
-            double right_sum = 0;
-
-            for(int i = 0; i < average_size; i++)
-            {
-                left_sum += left_velocity_average[i];
-                right_sum += right_velocity_average[i];
-            }
-
-            left_average = left_sum/average_size;
-            right_average = right_sum/average_size;
-
-            ROS_DEBUG("CanListener: velocity_left: %f, velocity_right: %f", left_average*10000000,right_average*10000000);
+            left_average = calculateAverage(left_velocity_average, velocity_left);
+            right_average = calculateAverage(right_velocity_average, velocity_right);
 
             d = ( d_left + d_right ) / 2 ;
             ROS_DEBUG("CanListener: Driven dinstance =  %f", d);

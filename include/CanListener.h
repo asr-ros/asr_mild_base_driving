@@ -33,6 +33,7 @@ class CanListener
     void movingForward(double d, double d_time);
     void turningInPlace(double t, double d_time);
     void otherMovement(double d, double t, double d_time);
+    double calculateAverage(double velocity_average[], double velocity);
 
 public:
     CanListener(RobotState *state):state(state) {};
