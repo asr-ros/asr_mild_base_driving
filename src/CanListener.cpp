@@ -23,11 +23,12 @@ void CanListener::initalize()
     right_average = 0;
 
     //Average over X succressive measures.
-    average_size = 50;
+    average_size = 25;
     left_velocity_average[average_size];
     right_velocity_average[average_size];
     counter = 0;
 }
+
 geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time)
 {
 
@@ -75,6 +76,7 @@ nav_msgs::Odometry CanListener::getOdomMsg(ros::Time current_time)
     return odom;
 
 }
+
 bool CanListener::gettingData()
 {
     ssize_t nbytes;
@@ -181,6 +183,7 @@ double CanListener::calculateAverage(double velocity_average[], double velocity)
 
     return sum/average_size;
 }
+
 void CanListener::run()
 {
     //********************************************************************************//
