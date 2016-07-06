@@ -12,7 +12,13 @@
 double left_average = 0;
 double right_average = 0;
 
-
+void CanListener::initalize(){
+    //Means 1:144 gearing.
+    impulses_per_mm_left = -152.8;
+    impulses_per_mm_right = 152.8;
+    //distance between left and right wheel
+    wheel_distance = 663.0;
+}
 geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time)
 {
 
@@ -152,16 +158,11 @@ void CanListener::run()
     // Initialisation.
     //********************************************************************************//
     //d=drived distance, d_left = drived distance wheel left, t = changing of the orientation.
+    initalize();
     double d = 0, d_left = 0, d_right = 0, t =0 ;
     // velocity of left/right wheel
     double velocity_left = 0, velocity_right = 0;
-    //Means 1:144 gearing.
-    double impulses_per_mm_left = -152.8;
-    double impulses_per_mm_right = 152.8;
-    //distance between left and right wheel
-    double wheel_distance = 663.0;
-    int ticks_left, ticks_right, ticks_left_old, ticks_right_old;
-    ticks_left = ticks_right = ticks_left_old = ticks_right_old = 0;
+    int ticks_left = 0, ticks_right = 0, ticks_left_old = 0, ticks_right_old = 0;
     bool first = true;
 
     ros::Rate rate(300);
@@ -172,7 +173,6 @@ void CanListener::run()
     int average_size = 50;
     double left_velocity_average[50] = {};
     double right_velocity_average[50] = {};
-
     int counter = 0;
 
     //Loop until node is stopped.

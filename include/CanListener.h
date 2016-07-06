@@ -13,7 +13,12 @@ class CanListener
     //Variables
     //Current RoboterState.
     RobotState *state;
+    double impulses_per_mm_left;
+    double impulses_per_mm_right;
+    double wheel_distance;
 
+
+    void initalize();
     geometry_msgs::TransformStamped getOdomTF(ros::Time current_time);
     nav_msgs::Odometry getOdomMsg(ros::Time current_time);
     bool gettingData();
