@@ -89,7 +89,7 @@ float BaseController::calculateVelocity(float speed, float velocity_old)
 {
     // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
     float next =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
-
+    ROS_DEBUG("cmd.linear.x: %f, cmd.linear.z: %f", cmd.linear.x, cmd.angular.z);
     //Smoothing the moves. With weighting 4/6.
     return velocity_old * 0.40 + next * 0.60;
 }

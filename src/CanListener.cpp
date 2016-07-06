@@ -215,7 +215,7 @@ void CanListener::run()
             ticks_left = (frame.data[3]<<8)+frame.data[2];
             ticks_right = (frame.data[1]<<8)+frame.data[0];
 
-            ROS_DEBUG("ticks_left: %i, ticks_right: %i", ticks_left,ticks_right);
+            ROS_DEBUG("CanListener: ticks_left: %i, ticks_right: %i", ticks_left,ticks_right);
             if(first)
             {
                 ROS_INFO("CanListener: Started successfully.\n");
