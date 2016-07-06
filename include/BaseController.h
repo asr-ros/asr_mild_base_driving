@@ -19,6 +19,13 @@ class BaseController
     //Messages from Ros
     geometry_msgs::Twist cmd;
 
+
+    int initAX10420();
+    void writeDataToCan(float vleft, float vright,  float max_speed);
+    bool enableMotor(int ax10420);
+    //Transforming the velovity commands into differential drive velocities
+    float calculateVelocity(float speed, float velocity_old);
+
 public:
     /**
     This function is triggered when a Twist message is received.

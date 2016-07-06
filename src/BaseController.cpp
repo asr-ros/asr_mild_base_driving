@@ -22,6 +22,77 @@
 #define EXTRA_BUTTON_BIT 32
 #define SCANNER_OSSD2_BIT 0x10
 
+
+int BaseController::initAX10420()
+{
+    //We use only one cart (nr.0) and use only the first group (eG1).
+    //Port A is set to Out (0).
+    //Port B is set to In (1).
+    //Port C upper and lower is set to In (1).
+    int ax10420 = AX10420_OpenDevice("/dev/ax104200");
+    int ret = AX10420_Init(ax10420, eG1, 0, 1, 1, 1);
+    if (ret!=0)
+    {
+        ROS_ERROR("BaseController: AX10420_Init() failed, error code %d", ret);
+    }
+    return ax10420;
+}
+
+void BaseController::writeDataToCan(float vleft, float vright,  float max_speed)
+{
+    unsigned short outputleft;
+    unsigned short outputright;
+    struct can_frame frame;
+    frame.can_id = 0xb;
+    frame.can_dlc = 8;
+    //Left.
+    outputleft=(unsigned short)(vleft/max_speed*0x7f+0x7f);
+    ROS_DEBUG("BaseController: outputleft = %i", outputleft);
+
+    //Right.
+    outputright=(unsigned short)(vright/max_speed*0x7f+0x7f);
+    ROS_DEBUG("BaseController: outputright = %i", outputright);
+
+    //********************************************************************************//
+    //Writing the Velocities in the CAN-Frame
+    //********************************************************************************//
+    frame.data[0] = outputright & 0xff;
+    frame.data[1] = outputright >> 8;
+    frame.data[2] = outputleft & 0xff;
+    frame.data[3] = outputleft >> 8;
+
+    //Writing on the CAN-Bus.
+    write(state->getSocket(), &frame, sizeof(struct can_frame));
+}
+
+bool BaseController::enableMotor(int ax10420)
+{
+    unsigned char outbyte = 0;
+    //Enable motor.
+    outbyte |= MOTOR_ENABLE_BIT;
+    ROS_DEBUG("BaseController: Motor enable.");
+    //Disable emergency stop.
+    outbyte |= EMERGENCY_STOP_BIT;
+    outbyte |= INDICATOR_BIT;
+    ROS_DEBUG("BaseController: Disable emergency stop.");
+
+    //Now put value to port A of Group 1.
+    int ret = AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
+    if (ret!=0)
+    {
+        ROS_ERROR("BaseController: AX10420_SetOutput() failed, error code %d", ret);
+    }
+    return true;
+}
+
+float BaseController::calculateVelocity(float speed, float velocity_old)
+{
+    // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
+    float next =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
+
+    //Smoothing the moves. With weighting 4/6.
+    return velocity_old * 0.40 + next * 0.60;
+}
 //This function handles all the mild_base_driving bus/motor/relais board related stuff.
 //The AX10420 is the controller for the relais board.
 void BaseController::run()
@@ -31,38 +102,19 @@ void BaseController::run()
                           &BaseController::setTargetVelocity,
                           this);
 
-    int ax10420;
+    int ax10420 = initAX10420();
     float speed;
     state->n->param("velocity", speed, 1.0f);
-
-    //We use only one cart (nr.0) and use only the first group (eG1).
-    //Port A is set to Out (0).
-    //Port B is set to In (1).
-    //Port C upper and lower is set to In (1).
-    ax10420 = AX10420_OpenDevice("/dev/ax104200");
-    int ret = AX10420_Init(ax10420, eG1, 0, 1, 1, 1);
-    if (ret!=0)
-    {
-        ROS_ERROR("BaseController: AX10420_Init() failed, error code %d", ret);
-    }
-
 
     //********************************************************************************//
     // Initialisation
     //********************************************************************************//
-    unsigned char outbyte = 0;
     float vleft2 = 0;
     float vright2 = 0;
     float max_speed = 612;
-    unsigned short outputleft;
-    unsigned short outputright;
     bool motorEnabled = false;
 
     ros::Rate rate(50);
-
-    struct can_frame frame;
-    frame.can_id = 0xb;
-    frame.can_dlc = 8;
 
     bool first = true;
 
@@ -73,27 +125,13 @@ void BaseController::run()
     //Driving loop until node is stopped. Processing velocity commands each time being passed.
     while ( ros::ok() )
     {
-        outbyte = 0;
-
         float vleft = 0;
         float vright = 0;
-        float nextleft = 0;
-        float nextright = 0;
 
-        {
-            //********************************************************************************//
-            //Transforming the velovity commands into differential drive velocities
-            //********************************************************************************//
-            boost::mutex::scoped_lock scoped_lock(mutex);
+        boost::mutex::scoped_lock scoped_lock(mutex);
 
-            // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
-            nextleft =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
-            nextright =   100 * ( cmd.linear.x + (cmd.angular.z*0.3315))*speed;
-        }
-
-        //Smoothing the moves. With weighting 4/6.
-        vleft = vleft2 * 0.40 + nextleft * 0.60;
-        vright = vright2 * 0.40 + nextright * 0.60;
+        vleft = calculateVelocity(speed, vleft2);
+        vright = calculateVelocity(speed, vright2);
 
         ROS_DEBUG("BaseController: 1. vleft: %f, vright: %f", vleft, vright);
 
@@ -112,64 +150,26 @@ void BaseController::run()
         //We got an effective driving command.
         if ((vleft != 0) || (vright != 0))
         {
-
-            ROS_DEBUG("BaseController: velocity_left: %f, velocity_right: %f", canListener->get_velocity_left(),canListener->get_velocity_right());
-
             //Adapt the velocity linear to the required velocity, if the real velocity is different to the required.
             right_adapter = calculateAdapter(vright, canListener->get_velocity_right(), right_adapter);
             vright += right_adapter;
-
 
             left_adapter = calculateAdapter(vleft, canListener->get_velocity_left(), left_adapter);
             vleft += left_adapter;
 
             ROS_DEBUG("BaseController: 2. vleft: %f, vright: %f", vleft, vright);
 
-            ROS_DEBUG("BaseController: left_adapter: %f, right_adapter: %f", left_adapter, right_adapter);
-
-            //Enable motor.
-            outbyte |= MOTOR_ENABLE_BIT;
-            motorEnabled = true;
-            ROS_DEBUG("BaseController: Motor enable.");
-            //Disable emergency stop.
-            outbyte |= EMERGENCY_STOP_BIT;
-            outbyte |= INDICATOR_BIT;
-            ROS_DEBUG("BaseController: Disable emergency stop.");
-
-            //Now put value to port A of Group 1.
-            ret = AX10420_SetOutput(ax10420, eG1, ePA, outbyte);
-            if (ret!=0)
-            {
-                ROS_ERROR("BaseController: AX10420_SetOutput() failed, error code %d", ret);
-            }
+            motorEnabled = enableMotor(ax10420);
 
             vleft = std::min(vleft, max_speed);
             vleft = std::max(vleft, -max_speed);
             vright = std::min(vright, max_speed);
             vright = std::max(vright, -max_speed);
 
-            ROS_DEBUG("vleft: %f, vright %f", vleft,vright);
             //We need inverse speeds because of the iaim wiring.
             vleft = -vleft;
 
-            //Left.
-            outputleft=(unsigned short)(vleft/max_speed*0x7f+0x7f);
-            ROS_DEBUG("BaseController: outputleft = %i", outputleft);
-
-            //Right.
-            outputright=(unsigned short)(vright/max_speed*0x7f+0x7f);
-            ROS_DEBUG("BaseController: outputright = %i", outputright);
-
-            //********************************************************************************//
-            //Writing the Velocities in the CAN-Frame
-            //********************************************************************************//
-            frame.data[0] = outputright & 0xff;
-            frame.data[1] = outputright >> 8;
-            frame.data[2] = outputleft & 0xff;
-            frame.data[3] = outputleft >> 8;
-
-            //Writing on the CAN-Bus.
-            write(state->getSocket(), &frame, sizeof(struct can_frame));
+            writeDataToCan(vleft, vright, max_speed);
         }
         else if (motorEnabled)
         {
