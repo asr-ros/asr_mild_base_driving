@@ -9,8 +9,7 @@
 #include <stdlib.h>
 
 
-double left_average = 0;
-double right_average = 0;
+
 
 void CanListener::initalize(){
     //Means 1:144 gearing.
@@ -18,6 +17,15 @@ void CanListener::initalize(){
     impulses_per_mm_right = 152.8;
     //distance between left and right wheel
     wheel_distance = 663.0;
+
+    left_average = 0;
+    right_average = 0;
+
+    //Average over X succressive measures.
+    average_size = 50;
+    left_velocity_average[average_size];
+    right_velocity_average[average_size];
+    counter = 0;
 }
 geometry_msgs::TransformStamped CanListener::getOdomTF(ros::Time current_time)
 {
@@ -168,12 +176,6 @@ void CanListener::run()
     ros::Rate rate(300);
     ros::Time current_time, last_time, start_time;
     current_time = last_time = start_time = ros::Time::now();
-
-    //Average over X succressive measures.
-    int average_size = 50;
-    double left_velocity_average[50] = {};
-    double right_velocity_average[50] = {};
-    int counter = 0;
 
     //Loop until node is stopped.
     while( ros::ok() )

@@ -16,6 +16,13 @@ class CanListener
     double impulses_per_mm_left;
     double impulses_per_mm_right;
     double wheel_distance;
+    double left_average;
+    double right_average;
+    //Average over X succressive measures.
+    int average_size;
+    double left_velocity_average[];
+    double right_velocity_average[];
+    int counter;
 
 
     void initalize();
