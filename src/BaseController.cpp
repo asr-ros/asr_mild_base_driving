@@ -84,15 +84,6 @@ bool BaseController::enableMotor(int ax10420)
     }
     return true;
 }
-
-float BaseController::calculateVelocity(float speed, float velocity_old)
-{
-    // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
-    float next =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
-    ROS_DEBUG("cmd.linear.x: %f, cmd.linear.z: %f", cmd.linear.x, cmd.angular.z);
-    //Smoothing the moves. With weighting 4/6.
-    return velocity_old * 0.40 + next * 0.60;
-}
 //This function handles all the mild_base_driving bus/motor/relais board related stuff.
 //The AX10420 is the controller for the relais board.
 void BaseController::run()
@@ -127,11 +118,23 @@ void BaseController::run()
     {
         float vleft = 0;
         float vright = 0;
+        float nextleft = 0;
+        float nextright = 0;
 
-        boost::mutex::scoped_lock scoped_lock(mutex);
+        {
+            //********************************************************************************//
+            //Transforming the velovity commands into differential drive velocities
+            //********************************************************************************//
+            boost::mutex::scoped_lock scoped_lock(mutex);
 
-        vleft = calculateVelocity(speed, vleft2);
-        vright = calculateVelocity(speed, vright2);
+            // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
+            nextleft =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
+            nextright =   100 * ( cmd.linear.x + (cmd.angular.z*0.3315))*speed;
+        }
+
+        //Smoothing the moves. With weighting 4/6.
+        vleft = vleft2 * 0.40 + nextleft * 0.60;
+        vright = vright2 * 0.40 + nextright * 0.60;
 
         ROS_DEBUG("BaseController: 1. vleft: %f, vright: %f", vleft, vright);
 
