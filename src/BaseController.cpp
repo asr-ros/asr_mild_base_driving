@@ -85,13 +85,20 @@ bool BaseController::enableMotor(int ax10420)
     return true;
 }
 
-float BaseController::calculateVelocity(float speed, float velocity_old)
+float BaseController::calculateVelocity(bool left, float speed, float velocity_old)
 {
     float next = 0;
     // 0.3315 = wheel_distance/2, in meter, multiply with speedfaktor.
     {
-    boost::mutex::scoped_lock scoped_lock(mutex);
-    next =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
+        boost::mutex::scoped_lock scoped_lock(mutex);
+        if(left)
+        {
+            next =  100 * ( cmd.linear.x - (cmd.angular.z*0.3315))*speed;
+        }
+        else
+        {
+            next =  100 * ( cmd.linear.x + (cmd.angular.z*0.3315))*speed;
+        }
     }
 
     //Smoothing the moves. With weighting 4/6.
@@ -136,8 +143,8 @@ void BaseController::run()
         //Transforming the velovity commands into differential drive velocities
         //********************************************************************************//
 
-        vleft = calculateVelocity(speed, vleft2);
-        vright = calculateVelocity(speed, vright2);
+        vleft = calculateVelocity(true, speed, vleft2);
+        vright = calculateVelocity(false, speed, vright2);
 
         ROS_DEBUG("BaseController: 1. vleft: %f, vright: %f", vleft, vright);
 

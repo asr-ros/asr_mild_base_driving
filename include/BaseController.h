@@ -23,7 +23,7 @@ class BaseController
     int initAX10420();
     void writeDataToCan(float vleft, float vright,  float max_speed);
     bool enableMotor(int ax10420);
-    float calculateVelocity(float speed, float velocity_old);
+    float calculateVelocity(bool left, float speed, float velocity_old);
 
 public:
     /**
