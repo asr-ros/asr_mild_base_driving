@@ -20,8 +20,8 @@ class CanListener
     double right_average;
     //Average over X succressive measures.
     int average_size;
-    double left_velocity_average[];
-    double right_velocity_average[];
+    double left_velocity_average[50];
+    double right_velocity_average[50];
     int counter;
 
 
