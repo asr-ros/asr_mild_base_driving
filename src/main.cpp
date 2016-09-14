@@ -1,6 +1,6 @@
 /**
 
-Copyright (c) 2016, Aumann Florian, Borella Jocelyn, Marek Felix, Mayr Matthias, Meißner Pascal
+Copyright (c) 2016, Aumann Florian, Borella Jocelyn, Dehmani Souheil, Marek Felix, Meißner Pascal, Reckling Reno
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

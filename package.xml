@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>mild_base_driving</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>The mild_base_driving package calculates and publishes the odometry informations, transforms the velocity command into differential drive commands and writes it on the mild_base_driving bus</description>
   <maintainer email="pascal.meissner@kit.edu">Pascal Meißner</maintainer>
   <license>GPL</license>
