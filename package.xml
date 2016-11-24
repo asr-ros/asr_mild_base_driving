@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package>
+  <name>asr_mild_base_driving</name>
+  <version>1.0.0</version>
+  <description>This package calculates and publishes the odometry information, transforms the velocity command into differential drive commands and writes it on the mild_base_driving bus</description>
+  <author>Aumann Florian, Borella Jocelyn, Dehmani Souheil, Marek Felix, Meißner Pascal, Reckling Reno</author>
+  <maintainer email="pascal.meissner@posteo.de">Meißner Pascal</maintainer>
+  <license>GPL</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>SDL</build_depend>
+  <build_depend>Boost</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>SDL</run_depend>
+  <run_depend>Boost</run_depend>
+
+</package>
