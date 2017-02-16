@@ -4,7 +4,7 @@
   <version>1.0.0</version>
   <description>This package calculates and publishes the odometry information, transforms the velocity command into differential drive commands and writes it on the mild_base_driving bus</description>
   <author>Aumann Florian, Borella Jocelyn, Dehmani Souheil, Marek Felix, Meißner Pascal, Reckling Reno</author>
-  <maintainer email="pascal.meissner@posteo.de">Meißner Pascal</maintainer>
+  <maintainer email="asr-ros@lists.kit.edu">Meißner Pascal</maintainer>
   <license>GPL</license>
 
   <buildtool_depend>catkin</buildtool_depend>
