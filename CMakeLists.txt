@@ -21,6 +21,8 @@ catkin_package(
 include_directories(
 	include
 	${SDL_INCLUDE_DIRS}
+	${catkin_INCLUDE_DIRS}
+        ${EIGEN_INCLUDE_DIRS}
 )
 
 add_executable(asr_mild_base_driving 
