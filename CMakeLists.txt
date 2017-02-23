@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(mild_base_driving)
+project(asr_mild_base_driving)
+
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -23,13 +24,17 @@ include_directories(
 	${SDL_INCLUDE_DIRS}
 )
 
-add_executable(mild_base_driving 
+
+
+add_executable(asr_mild_base_driving 
 	src/main.cpp 
 	src/BaseController.cpp 
 	src/CanListener.cpp
 )
 
-target_link_libraries(mild_base_driving
+
+target_link_libraries(asr_mild_base_driving
+
 	${catkin_LIBRARIES}
 	${SDL_LIBRARIES}
 )
