@@ -43,8 +43,6 @@ void CanListener::initalize()
 
     //Average over X succressive measures.
     average_size = 25;
-    left_velocity_average[average_size];
-    right_velocity_average[average_size];
     counter = 0;
 }
 
@@ -300,8 +298,6 @@ void CanListener::run()
         // Publishing.
         //********************************************************************************//
 
-        //Since all odometry is 6DOF we'll need a quaternion created from yaw.
-        geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(state->getTh());
 
         //First, we'll publish the transform over tf.
         state->sendTransformOdomTF(getOdomTF(current_time));
