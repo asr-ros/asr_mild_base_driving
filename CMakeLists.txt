@@ -16,7 +16,8 @@ find_package(Boost)
 catkin_package(
 	INCLUDE_DIRS include
 	CATKIN_DEPENDS roscpp std_msgs tf nav_msgs
-	DEPENDS SDL Boost
+	#DEPENDS SDL Boost
+	DEPENDS Boost
 )
 
 include_directories(
